@@ -1,6 +1,7 @@
 from urllib2 import urlopen
 from urllib2 import URLError
-import xe_configurations
+import currency_configurations
+import retry_configurations
 import datetime
 import argparse
 import time
@@ -39,21 +40,21 @@ def validate(date_text):
     except ValueError:
         raise ValueError("Incorrect data format, should be YYYY-MM-DD")
 
-@retry(URLError, tries=xe_configurations.config["tries"], delay=xe_configurations.config["delay"], backoff=xe_configurations.config["backoff"])
+@retry(URLError, tries=retry_configurations.config["tries"], delay=retry_configurations.config["delay"], backoff=retry_configurations.config["backoff"])
 def get_currency(reference_date):
     currency_base=args.basecurrency
-    country_map = xe_configurations.currencymap
+    country_map = currency_configurations.currencymap
     search=args.currencynamelist
     access_key=args.apiaccesskey
     symbols=""
     inputvalues = [item.lower() for item in search]
-    for key, value in xe_configurations.currencymap.iteritems():
+    for key, value in currency_configurations.currencymap.iteritems():
         if any(inputvalue in value.lower() for inputvalue in inputvalues):
             symbols+=(key + ",")
     if len(symbols) == 0:
-        print "No currency name found. Please try again and check configuration for the list of available currency names."
-    elif not (any(currency_base==key for key in xe_configurations.currencymap.keys())):
-        print "Currency base was not found. Please try again and check configuration for the list of currency."
+        print "No currency name found. Please try again and check currency configuration for the list of available currency names."
+    elif not (any(currency_base==key for key in currency_configurations.currencymap.keys())):
+        print "Currency base was not found. Please try again and check currency configuration for the list of currency."
     else:
         url = "http://data.fixer.io/api/" + reference_date + "?access_key=" + access_key + "&base=" + currency_base + "&date=" + reference_date + "&symbols=" + symbols[:-1]
         if args.debug:
@@ -68,9 +69,9 @@ def get_currency(reference_date):
         else:
             for symbol,rate in result['rates'].iteritems():
                 if args.visual:
-                    print str(xe_configurations.currencymap[symbol]).ljust(30," ") + str(symbol).ljust(12," ") + str(reference_date).ljust(10," ") + str(rate).rjust(20," ")
+                    print str(currency_configurations.currencymap[symbol]).ljust(30," ") + str(symbol).ljust(12," ") + str(reference_date).ljust(10," ") + str(rate).rjust(20," ")
                 else:
-                    print str(xe_configurations.currencymap[symbol]) + "," + str(symbol) + "," + str(reference_date) + "," + str(rate)
+                    print str(currency_configurations.currencymap[symbol]) + "," + str(symbol) + "," + str(reference_date) + "," + str(rate)
 
 now=datetime.datetime.now()
 currentdate=now.strftime("%Y-%m-%d")
@@ -83,7 +84,7 @@ CLI.add_argument(
   "--currencynamelist",
   nargs="*",
   type=str,
-  default=list(xe_configurations.currencymap.values())
+  default=list(currency_configurations.currencymap.values())
 )
 CLI.add_argument(
   "--datelist",

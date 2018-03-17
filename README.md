@@ -7,7 +7,7 @@ Get your currency with this python script via [fixer](https://fixer.io)
 
 ### Optional Parameters
 * **datelist**: Date list where each date is in YYYY-MM-DD format. Used for retrieving exchange rate within the time points specified in date list. 
-* **currencynamelist**: Currency name list where each currency name represents a wildcard for matching any currencies from currency dictionary found within [configuration](https://github.com/asokratis/python_currency_fixer/blob/master/xe_configurations.py)
+* **currencynamelist**: Currency name list where each currency name represents a wildcard for matching any currencies from currency dictionary found within [configuration](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py)
 * **basecurrency**: Currency base for calculating the exchange rate represented as currency code.
 
 ### Flag Parameters
