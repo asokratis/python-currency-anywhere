@@ -95,7 +95,7 @@ CLI.add_argument(
 CLI.add_argument(
   "--basecurrency",
   type=str,
-  default="USD"
+  default="EUR"
 )
 CLI.add_argument(
    "--debug",
