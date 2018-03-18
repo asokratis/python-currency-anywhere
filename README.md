@@ -5,7 +5,7 @@ Get your currency with this python script via [fixer](https://fixer.io)
 To update existing [currency_configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py), run [update_currency_configurations](https://github.com/asokratis/python_currency_fixer/blob/master/update_currency_configurations.py) while providing your fixer API Key as parameter. You can update the maximum number of failed attempts on requesting currency data at [retry_configurations](https://github.com/asokratis/python_currency_fixer/blob/master/retry_configurations.py). 
 
 ## get_currency
-<br>By default, displays exchange rate for all currencies with EUR as base currency for today's date. 
+By default, displays exchange rate for all currencies with EUR as base currency for today's date. 
 
 ### Required Parameters
 * **apiaccesskey**: Register for an API Key at [fixer](https://fixer.io)
