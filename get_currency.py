@@ -7,6 +7,7 @@ import argparse
 import time
 import simplejson as json
 from functools import wraps
+import decimal
 
 # Trying out a Retry decorator in Python = https://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/
 def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
@@ -56,7 +57,10 @@ def get_currency(reference_date):
     elif not (any(currency_base==key for key in currency_configurations.currencymap.keys())):
         print "Currency base was not found. Please try again and check currency configuration for the list of currency."
     else:
-        url = "http://data.fixer.io/api/" + reference_date + "?access_key=" + access_key + "&base=" + currency_base + "&date=" + reference_date + "&symbols=" + symbols[:-1]
+        if args.legacy_user:
+            url = "https://data.fixer.io/api/" + reference_date + "?access_key=" + access_key + "&base=" + currency_base + "&date=" + reference_date + "&symbols=" + symbols[:-1]
+        else:
+            url = "http://data.fixer.io/api/" + reference_date + "?access_key=" + access_key + "&base=EUR" + "&date=" + reference_date + "&symbols=" + symbols[:-1] + "," + currency_base
         if args.debug:
             print "Debug: Running url..."
             print "Debug: " + url
@@ -67,11 +71,21 @@ def get_currency(reference_date):
             print "ERROR " + str(result['error']['code'])
             print  result['error']['info']
         else:
+            denominator = 1
+            if not args.legacy_user:
+                denominator=decimal.Decimal(result['rates'][currency_base])
             for symbol,rate in result['rates'].iteritems():
-                if args.visual:
-                    print str(currency_configurations.currencymap[symbol]).ljust(30," ") + str(symbol).ljust(12," ") + str(reference_date).ljust(10," ") + str(rate).rjust(20," ")
-                else:
-                    print str(currency_configurations.currencymap[symbol]) + "," + str(symbol) + "," + str(reference_date) + "," + str(rate)
+                if symbol in symbols:
+                    rate=decimal.Decimal(rate)/denominator
+                    reciprocal_rate=decimal.Decimal(1)/rate
+                    rate=rate.quantize(decimal.Decimal("0.000000000001"),decimal.ROUND_HALF_UP)
+                    reciprocal_rate=reciprocal_rate.quantize(decimal.Decimal("0.000000000001"),decimal.ROUND_HALF_UP)
+                    output = ""
+                    if args.visual:
+                        output += str(currency_configurations.currencymap[symbol]).decode('utf-8').ljust(40," ") + str(symbol).ljust(12," ") + str(reference_date).ljust(10," ") + "{0:.12f}".format(rate).rjust(30," ") +  "{0:.12f}".format(reciprocal_rate).rjust(30," ")
+                    else:
+                        output += str(currency_configurations.currencymap[symbol]).decode('utf-8') + "," + str(symbol) + "," + str(reference_date) + "," + "{0:.12f}".format(rate) + "," + "{0:.12f}".format(reciprocal_rate)
+                    print output.encode('utf-8')
 
 now=datetime.datetime.now()
 currentdate=now.strftime("%Y-%m-%d")
@@ -105,12 +119,23 @@ CLI.add_argument(
    "--visual",
    action='store_true'
 )
+CLI.add_argument(
+   "--legacy_user",
+   action='store_true'
+)
+CLI.add_argument(
+   "--no_header",
+   action='store_true'
+)
 args = CLI.parse_args()
+header=""
 if args.visual:
-    print "Currency Name".ljust(30," ") + "Abbreviation".rjust(12," ") + "Date".rjust(10," ") + "Exchange Rate".rjust(20," ")
-    print "=" * 80
+    header=  "Currency Name".ljust(40," ") + "Symbol".ljust(12," ") + "Date".rjust(10," ") + "Rate".rjust(30," ") + "Reciprocal Rate".rjust(30," ") + "\n"
+    header+= "=" * 130
 else:
-    print "currency_name,abbreviation,date,exchange_rate"
+    header="currency_name,symbol,date,rate,reciprocal_rate"
+if not args.no_header:
+    print header
 for i in args.datelist:
     date_converted = validate(i)
     maximum = datetime.date.today()
