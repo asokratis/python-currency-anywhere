@@ -46,11 +46,13 @@ def get_currency(reference_date):
     currency_base=args.basecurrency
     country_map = currency_configurations.currencymap
     search=args.currencynamelist
+    usersymbol=args.symbollist
     access_key=args.apiaccesskey
     symbols=""
-    inputvalues = [item.lower() for item in search]
+    inputvalues  = [item.lower() for item in search]
+    inputsymbols = [item.lower() for item in usersymbol]
     for key, value in currency_configurations.currencymap.iteritems():
-        if any(inputvalue in value.lower() for inputvalue in inputvalues):
+        if any(inputvalue in value.lower() for inputvalue in inputvalues) and any(inputsymbol==key.lower() for inputsymbol in inputsymbols):
             symbols+=(key + ",")
     if len(symbols) == 0:
         print "No currency name found. Please try again and check currency configuration for the list of available currency names."
@@ -76,15 +78,16 @@ def get_currency(reference_date):
                 denominator=decimal.Decimal(result['rates'][currency_base])
             for symbol,rate in result['rates'].iteritems():
                 if symbol in symbols:
-                    rate=decimal.Decimal(rate)/denominator
-                    reciprocal_rate=decimal.Decimal(1)/rate
-                    rate=rate.quantize(decimal.Decimal("0.000000000001"),decimal.ROUND_HALF_UP)
-                    reciprocal_rate=reciprocal_rate.quantize(decimal.Decimal("0.000000000001"),decimal.ROUND_HALF_UP)
+                    amount=args.amount.quantize(decimal.Decimal("0.01"),decimal.ROUND_HALF_UP)
+                    rate=(decimal.Decimal(rate)/denominator)*amount
+                    reciprocal_rate=(decimal.Decimal(1)/rate)
+                    rate=rate.quantize(decimal.Decimal("0.0000000000000001"),decimal.ROUND_HALF_UP)
+                    reciprocal_rate=reciprocal_rate.quantize(decimal.Decimal("0.0000000000000001"),decimal.ROUND_HALF_UP)
                     output = ""
                     if args.visual:
-                        output += str(currency_configurations.currencymap[symbol]).decode('utf-8').ljust(40," ") + str(symbol).ljust(12," ") + str(reference_date).ljust(10," ") + "{0:.12f}".format(rate).rjust(30," ") +  "{0:.12f}".format(reciprocal_rate).rjust(30," ")
+                        output += str(currency_configurations.currencymap[symbol]).decode('utf-8').ljust(40," ") + str(symbol).ljust(12," ") + str(reference_date).ljust(10," ") + "{0:.2f}".format(amount).rjust(12," ") + "{0:.14f}".format(rate).rjust(32," ") +  "{0:.14f}".format(reciprocal_rate).rjust(32," ")
                     else:
-                        output += str(currency_configurations.currencymap[symbol]).decode('utf-8') + "," + str(symbol) + "," + str(reference_date) + "," + "{0:.12f}".format(rate) + "," + "{0:.12f}".format(reciprocal_rate)
+                        output += str(currency_configurations.currencymap[symbol]).decode('utf-8') + "," + str(symbol) + "," + str(reference_date) + "," + "{0:.2f}".format(amount) + "," +  "{0:.14f}".format(rate) + "," + "{0:.14f}".format(reciprocal_rate)
                     print output.encode('utf-8')
 
 now=datetime.datetime.now()
@@ -101,15 +104,31 @@ CLI.add_argument(
   default=list(currency_configurations.currencymap.values())
 )
 CLI.add_argument(
+  "--symbollist",
+  nargs="*",
+  type=str,
+  default=list(currency_configurations.currencymap.keys())
+)
+CLI.add_argument(
   "--datelist",
   nargs="*",
   type=str,
   default=[currentdate]
 )
 CLI.add_argument(
+  "--amount",
+  type=decimal.Decimal,
+  default=decimal.Decimal(1.00)
+)
+CLI.add_argument(
   "--basecurrency",
   type=str,
   default="EUR"
+)
+CLI.add_argument(
+  "--daysinterval",
+  type=int,
+  default=0
 )
 CLI.add_argument(
    "--debug",
@@ -129,18 +148,31 @@ CLI.add_argument(
 )
 args = CLI.parse_args()
 header=""
+decimal.getcontext().prec = 50
 if args.visual:
-    header=  "Currency Name".ljust(40," ") + "Symbol".ljust(12," ") + "Date".rjust(10," ") + "Rate".rjust(30," ") + "Reciprocal Rate".rjust(30," ") + "\n"
-    header+= "=" * 130
+    header=  "Currency Name".ljust(40," ") + "Symbol".ljust(12," ") + "Date".rjust(10," ") + "Amount".rjust(12," ") + "Rate".rjust(32," ") + "Reciprocal Rate".rjust(32," ") + "\n"
+    header+= "=" * 140
 else:
-    header="currency_name,symbol,date,rate,reciprocal_rate"
+    header="currency_name,symbol,date,amount,rate,reciprocal_rate"
 if not args.no_header:
     print header
-for i in args.datelist:
-    date_converted = validate(i)
-    maximum = datetime.date.today()
-    minimum = datetime.date(1999, 1, 1)
-    if (minimum <= date_converted.date() <= maximum):
-        get_currency(i)
+rendereddatelist=[]
+if args.daysinterval > 0 and len(args.datelist) != 1:
+    print("Parameter --daysinterval cannot be used when parameter --datelist has more than one date.\nWhen parameter --daysinterval is in use, place only one date in parameter --datelist.")
+else: 
+    if args.daysinterval > 0 and len(args.datelist) == 1:
+        startdate=validate(args.datelist[0])
+        enddate=validate(args.datelist[0]) + datetime.timedelta(days=args.daysinterval)
+        rendereddatelist = [str((startdate + datetime.timedelta(days=x)).date()) for x in range((enddate-startdate).days + 1)]
     else:
-        print("Date " + i + " is out of bounds. Date range must be between " + minimum.strftime("%Y-%m-%d") + " and " + maximum.strftime("%Y-%m-%d") + ".")
+        rendereddatelist = args.datelist
+    for i in rendereddatelist:
+        date_converted = validate(i)
+        maximum = datetime.date.today()
+        minimum = datetime.date(1999, 1, 1)
+        if not (minimum <= date_converted.date() <= maximum):
+            print("Date " + i + " is out of bounds. Date range must be between " + minimum.strftime("%Y-%m-%d") + " and " + maximum.strftime("%Y-%m-%d") + ".")
+        elif not (args.amount >= 0.01 and args.amount <= 1000000):
+            print("Amount " + str(args.amount) + " is out of bounds. Amount range must be between 0.01 and 1000000.00")
+        else:
+            get_currency(i)
