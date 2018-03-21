@@ -38,7 +38,7 @@ By default, uses [Fixer](https://fixer.io) free and legacy accounts to display e
 
 #### How do I filter output to only the currencies I need?
 
-> You can either use optional parameter **currencynamelist** for entering a list that is similar to the currency name list within our [currency configuration](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) or use the optional parameter **symbollist** for entering a list of symbols that match with the symbols list found in our [currency configuration](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) (case insensitive).  
+> You can either use optional parameter **currencynamelist** for entering a list that is similar to the currency name list within our [currency configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) or use the optional parameter **symbollist** for entering a list of symbols that match with the symbols list found in our [currency configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) (case insensitive).  
 
 #### I am a free user in Fixer. Can I use any base currencies with this script?
 
@@ -59,6 +59,10 @@ By default, uses [Fixer](https://fixer.io) free and legacy accounts to display e
 #### What do you output? What choices do I have for the output?
 
 > Check the [list of columns we output](https://github.com/asokratis/python_currency_fixer#output) for more info.<br><br>We currently have two choices for output: CSV and human-readable. To see your output in a human-readable format, add the flag parameter **visual**. 
+
+#### Your currency configurations are out of date? Do I have to update your currency configurations manually?
+
+> You can update your [currency configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) automatically by running the python script **update_currency_configurations** by typing `python update_currency_configurations.py "<access-key-id>"`. Each time you update will cost you one API call.
 
 #### Do you have the option for saving my CSV output into a flatfile?
 
@@ -261,7 +265,9 @@ Sudanese Pound                          SDG         2018-03-18       12.50      
 #### Version 0.01
 * Initial Draft
 #### Version 0.02
-* Updated Configurations
+* Changed default base currency from USD to EUR
+* Added script **update_currency_configurations** that allow you to update automatically [currency configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) with the use of Fixer Supported Symbols Endpoint.
+* Added documentation for all existing configurations.
 #### Version 0.03
 * The formatting of numerical figures is in decimal format. If output in API is found in scientific notation, it is converted to decimal format. To keep accuracy of calculations, we keep them in decimal format. After calculations, we round them up with a precision of 12 digits and show the output of all numerical figures with 12 digits.
 * Fixed output issues on the use cases when it was not encoded to `utf-8` properly. 
@@ -273,6 +279,6 @@ Sudanese Pound                          SDG         2018-03-18       12.50      
 #### Version 0.04
 * Numerical figures extended from 12 digits to 14 digits and increased decimal precision.
 * Added a new column and optional parameter **amount** which is used to multiply the `rate`. The optional parameter amount must be between the values of one hundredth and one million and is rounded to the nearest one hundredth.
-* Added optional parameter **symbollist** that allows filtering output by only the list of symbols in the symbolllist that match with the symbols within the [currency configuration](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) (case insensitive).
+* Added optional parameter **symbollist** that allows filtering output by only the list of symbols in the symbolllist that match with the symbols within the [currency configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) (case insensitive).
 * Added optional parameter **daysinterval** that represents the number of consecutive days from the parameter datelist for the use of retrieving exchange rate within those dates. Parameter daysinterval must be a positive number and can have only one date in parameter datelist. 
 * Updated main documentation and Q&A section on existing and new features.
