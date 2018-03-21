@@ -1,3 +1,4 @@
+![python_currency_fixer](logo.png)
 # python_currency_fixer
 Get your currency with this python script via [Fixer](https://fixer.io)
 
