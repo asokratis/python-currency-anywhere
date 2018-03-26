@@ -3,18 +3,23 @@
 Get your currency with this python script via [Fixer](https://fixer.io)<br><br>![python_currency_fixer_demo](python_currency_fixer_demo.gif)
 
 ## configurations
-To update existing [currency_configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py), run [update_currency_configurations](https://github.com/asokratis/python_currency_fixer/blob/master/update_currency_configurations.py) while providing your Fixer API Key as parameter. You can update the maximum number of failed attempts on requesting currency data at [retry_configurations](https://github.com/asokratis/python_currency_fixer/blob/master/retry_configurations.py). 
+To update existing [currency_configurations](currency_configurations.py), run [update_currency_configurations](update_currency_configurations.py) while providing your Fixer API Key as parameter. You can update the maximum number of failed attempts on requesting currency data at [retry_configurations](retry_configurations.py). 
 
 ## get_currency
 By default, uses [Fixer](https://fixer.io) free and legacy accounts to display exchange rate for all currencies with EUR as base currency in the amounts of one unit for today's date. 
+
+### Purpose
+Users can query the exchange rate according to their needs and: 
+* See the results in a command line interface of their choice. 
+* Store the results in a flat file for later use ([Check last questions in Q&A for instructions on storing the columns you need in a flat file](README.md#do-you-have-the-option-for-saving-my-csv-output-into-a-flatfile)).
 
 ### Required Parameters
 * **apiaccesskey**: Register for an API Key at [Fixer](https://fixer.io)
 
 ### Optional Parameters
 * **datelist**: Date list where each date is in YYYY-MM-DD format. Used for retrieving exchange rate within the time points specified in date list. 
-* **currencynamelist**: Currency name list where each currency name represents a wildcard for matching any currencies from currency dictionary found within [currency configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py)
-* **symbollist**: Currency symbol list where each currency symbol must match to any currency symbols from currency dictionary found within [currency configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) (case insensitive)
+* **currencynamelist**: Currency name list where each currency name represents a wildcard for matching any currencies from currency dictionary found within [currency configurations](currency_configurations.py)
+* **symbollist**: Currency symbol list where each currency symbol must match to any currency symbols from currency dictionary found within [currency configurations](currency_configurations.py) (case insensitive)
 * **basecurrency**: Currency base for calculating the exchange rate represented as currency code.
 * **amount**: The amount to be converted from the base currency. Amount can be between the values of one hundredth to one million and is rounded to the nearest hundredth.
 * **daysinterval**: Determines the number of consecutive days from parameter datelist for retrieving exchange rate within those dates. In order for daysinterval to take effect, it must be a positive number while only one date is specified in datelist.
@@ -39,7 +44,7 @@ By default, uses [Fixer](https://fixer.io) free and legacy accounts to display e
 
 #### How do I filter output to only the currencies I need?
 
-> You can either use optional parameter **currencynamelist** for entering a list that is similar to the currency name list within our [currency configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) or use the optional parameter **symbollist** for entering a list of symbols that match with the symbols list found in our [currency configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) (case insensitive).  
+> You can either use optional parameter **currencynamelist** for entering a list that is similar to the currency name list within our [currency configurations](currency_configurations.py) or use the optional parameter **symbollist** for entering a list of symbols that match with the symbols list found in our [currency configurations](currency_configurations.py) (case insensitive).  
 
 #### I am a free user in Fixer. Can I use any base currencies with this script?
 
@@ -63,7 +68,7 @@ By default, uses [Fixer](https://fixer.io) free and legacy accounts to display e
 
 #### Your currency configurations are out of date? Do I have to update your currency configurations manually?
 
-> You can update your [currency configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) automatically by running the python script **update_currency_configurations** by typing `python update_currency_configurations.py "<access-key-id>"`. Each time you update will cost you one API call.
+> You can update your [currency configurations](currency_configurations.py) automatically by running the python script **update_currency_configurations** by typing `python update_currency_configurations.py "<access-key-id>"`. Each time you update will cost you one API call.
 
 #### Do you have the option for saving my CSV output into a flatfile?
 
@@ -111,7 +116,7 @@ Euro                                    EUR         2018-03-04       12.50      
 * Initial Draft
 #### Version 0.02
 * Changed default base currency from USD to EUR
-* Added script **update_currency_configurations** that allow you to update automatically [currency configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) with the use of Fixer Supported Symbols Endpoint.
+* Added script **update_currency_configurations** that allow you to update automatically [currency configurations](currency_configurations.py) with the use of Fixer Supported Symbols Endpoint.
 * Added documentation for all existing configurations.
 #### Version 0.03
 * The formatting of numerical figures is in decimal format. If output in API is found in scientific notation, it is converted to decimal format. To keep accuracy of calculations, we keep them in decimal format. After calculations, we round them up with a precision of 12 digits and show the output of all numerical figures with 12 digits.
@@ -124,6 +129,6 @@ Euro                                    EUR         2018-03-04       12.50      
 #### Version 0.04
 * Numerical figures extended from 12 digits to 14 digits and increased decimal precision.
 * Added a new column and optional parameter **amount** which is used to multiply the `rate`. The optional parameter amount must be between the values of one hundredth and one million and is rounded to the nearest one hundredth.
-* Added optional parameter **symbollist** that allows filtering output by only the list of symbols in the symbolllist that match with the symbols within the [currency configurations](https://github.com/asokratis/python_currency_fixer/blob/master/currency_configurations.py) (case insensitive).
+* Added optional parameter **symbollist** that allows filtering output by only the list of symbols in the symbolllist that match with the symbols within the [currency configurations](currency_configurations.py) (case insensitive).
 * Added optional parameter **daysinterval** that represents the number of consecutive days from the parameter datelist for the use of retrieving exchange rate within those dates. Parameter daysinterval must be a positive number and can have only one date in parameter datelist. 
 * Updated main documentation and Q&A section on existing and new features.
