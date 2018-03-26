@@ -10,8 +10,8 @@ By default, uses [Fixer](https://fixer.io) free and legacy accounts to display e
 
 ### Purpose
 Users can query the exchange rate according to their needs and: 
-* See the results in a command line interface of their choice. 
-* Store the results in a flat file for later use ([Check last questions in Q&A for instructions on storing the columns you need in a flat file](README.md#do-you-have-the-option-for-saving-my-csv-output-into-a-flatfile)).
+* See the results in a command line interface of their choice 
+* [Store the results in a flat file for later use](README.md#do-you-have-the-option-for-saving-my-csv-output-into-a-flatfile)
 
 ### Required Parameters
 * **apiaccesskey**: Register for an API Key at [Fixer](https://fixer.io)
