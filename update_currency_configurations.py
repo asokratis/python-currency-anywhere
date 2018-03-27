@@ -1,5 +1,5 @@
 import argparse
-from urllib2 import urlopen
+from urllib.request import urlopen
 import simplejson as json
 
 CLI=argparse.ArgumentParser()
@@ -13,18 +13,19 @@ html = urlopen(url)
 handler = html.read()
 result = json.loads(handler)
 if result["success"] == False:
-    print "ERROR " + str(result['error']['code'])
-    print  result['error']['info']
+    print("ERROR " + str(result['error']['code']))
+    print(result['error']['info'])
 else:
     file = open('currency_configurations.py','w')
     file.write("# -*- coding: utf-8 -*-\n")
     file.write("currencymap = {\n")
     is_first = True
-    for symbol,name in result['symbols'].iteritems():
+    dictresult = result['symbols']
+    for key,value in sorted(dictresult.items()):
         if is_first:
-	    file.write(" \"" + symbol.encode('utf-8') + "\": \"" + name.encode('utf-8') + "\"\n")
-	    is_first = False
-	else:
-            file.write(",\"" + symbol.encode('utf-8') + "\": \"" + name.encode('utf-8') + "\"\n")
+            file.write(" \"" + str(key) + "\": \"" + str(value) + "\"\n")
+            is_first = False
+        else:
+            file.write(",\"" + str(key) + "\": \"" + str(value) + "\"\n")
     file.write("}\n")
     print("Updated currency_configurations")

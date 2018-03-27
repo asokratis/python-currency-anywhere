@@ -1,12 +1,15 @@
-![python_currency_fixer](logo.png)
+![python_currency_fixer](images/logo.png)
 # python_currency_fixer
-Get your currency with this python script via [Fixer](https://fixer.io)<br><br>![python_currency_fixer_demo](python_currency_fixer_demo.gif)
+Get your currency with this python script via [Fixer](https://fixer.io)<br><br>![python_currency_fixer_demo](images/python_currency_fixer_demo.gif)
+
+**Requirements: Python 3 environment with additional modules specified in [requirements.txt](requirements.txt)**<br>
+ ![python-logo-master](images/python_logo.png)
 
 ## configurations
 To update existing [currency_configurations](currency_configurations.py), run [update_currency_configurations](update_currency_configurations.py) while providing your Fixer API Key as parameter. You can update the maximum number of failed attempts on requesting currency data at [retry_configurations](retry_configurations.py). 
 
 ## get_currency
-By default, uses [Fixer](https://fixer.io) free and legacy accounts to display exchange rate for all currencies with EUR as base currency in the amounts of one unit for today's date. 
+By default, uses [Fixer](https://fixer.io) free and legacy accounts to display exchange rate for all currencies with EUR as base currency in the amounts of one unit for today's date. Results are sorted by date and then by currency symbol in ascending order. 
 
 ### Purpose
 Users can query the exchange rate according to their needs and: 
@@ -17,12 +20,14 @@ Users can query the exchange rate according to their needs and:
 * **apiaccesskey**: Register for an API Key at [Fixer](https://fixer.io)
 
 ### Optional Parameters
-* **datelist**: Date list where each date is in YYYY-MM-DD format. Used for retrieving exchange rate within the time points specified in date list. 
+* **datelist**: Date list where each date is in YYYY-MM-DD format. Used for retrieving exchange rate within the time points specified in date list. If not specified, uses today's date **[1]**.
 * **currencynamelist**: Currency name list where each currency name represents a wildcard for matching any currencies from currency dictionary found within [currency configurations](currency_configurations.py)
 * **symbollist**: Currency symbol list where each currency symbol must match to any currency symbols from currency dictionary found within [currency configurations](currency_configurations.py) (case insensitive)
 * **basecurrency**: Currency base for calculating the exchange rate represented as currency code.
 * **amount**: The amount to be converted from the base currency. Amount can be between the values of one hundredth to one million and is rounded to the nearest hundredth.
-* **daysinterval**: Determines the number of consecutive days from parameter datelist for retrieving exchange rate within those dates. In order for daysinterval to take effect, it must be a positive number while only one date is specified in datelist.
+* **daysinterval**: Determines the number of consecutive days from parameter datelist for retrieving exchange rate within those dates. In order for daysinterval to take effect, only one date should be specified in datelist.
+
+**[1]** Today's date is based on your computer's time zone. Fixer may not have available data for today's date if your timezone is more ahead than others. In those instances, it is recommended to specify a date explicitly by using the parameter datelist.
 
 ### Flag Parameters
 * **debug**: Prints helpful information for debugging.
@@ -68,11 +73,11 @@ Users can query the exchange rate according to their needs and:
 
 #### Your currency configurations are out of date? Do I have to update your currency configurations manually?
 
-> You can update your [currency configurations](currency_configurations.py) automatically by running the python script **update_currency_configurations** by typing `python update_currency_configurations.py "<access-key-id>"`. Each time you update will cost you one API call.
+> You can update your [currency configurations](currency_configurations.py) automatically by running the python script **update_currency_configurations** by typing `python3 update_currency_configurations.py "<access-key-id>"`. Each time you update will cost you one API call.
 
 #### Do you have the option for saving my CSV output into a flatfile?
 
-> We currently are not planning to add this feature in our next updates :neutral_face:<br><br>If you are in a linux environment, you have the ability to write the CSV output into a new flatfile by typing `python get_currency.py "<access-key-id>" > myflatfile.csv` or append to an existing flatfile by typing `python get_currency.py "<access-key-id>" --no_header >> myflatfile.csv` 
+> We currently are not planning to add this feature in our next updates :neutral_face:<br><br>If you are in a linux environment, you have the ability to write the CSV output into a new flatfile by typing `python3 get_currency.py "<access-key-id>" > myflatfile.csv` or append to an existing flatfile by typing `python3 get_currency.py "<access-key-id>" --no_header >> myflatfile.csv` 
 
 #### Do you have the option for getting only the columns I need?
 
@@ -80,38 +85,38 @@ Users can query the exchange rate according to their needs and:
 
 ### Examples
 
-`python get_currency.py <access-key-id> --visual --datelist 2018-03-01 2017-03-01 --currencynamelist mex aus eur`
+`python3 get_currency.py <access-key-id> --visual --datelist 2018-03-01 2017-03-01 --currencynamelist mex aus eur`
 ```
 Currency Name                           Symbol            Date      Amount                            Rate                 Reciprocal Rate
 ============================================================================================================================================
-Mexican Peso                            MXN         2018-03-01        1.00               23.12974600000000                0.04323437014829
-Australian Dollar                       AUD         2018-03-01        1.00                1.58082500000000                0.63258108898834
-Euro                                    EUR         2018-03-01        1.00                1.00000000000000                1.00000000000000
-Mexican Peso                            MXN         2017-03-01        1.00               20.91669800000000                0.04780869332244
 Australian Dollar                       AUD         2017-03-01        1.00                1.37636900000000                0.72654934832156
 Euro                                    EUR         2017-03-01        1.00                1.00000000000000                1.00000000000000
+Mexican Peso                            MXN         2017-03-01        1.00               20.91669800000000                0.04780869332244
+Australian Dollar                       AUD         2018-03-01        1.00                1.58082500000000                0.63258108898834
+Euro                                    EUR         2018-03-01        1.00                1.00000000000000                1.00000000000000
+Mexican Peso                            MXN         2018-03-01        1.00               23.12974600000000                0.04323437014829
 ```
 
-`python get_currency.py <access-key-id> --visual --datelist 2018-03-01 --daysinterval 3 --symbollist MXN AUD EUR --basecurrency BTC --amount 12.5`
+`python3 get_currency.py <access-key-id> --visual --datelist 2018-03-01 --daysinterval 3 --symbollist MXN AUD EUR --basecurrency BTC --amount 12.5`
 ```
 Currency Name                           Symbol            Date      Amount                            Rate                 Reciprocal Rate
 ============================================================================================================================================
-Mexican Peso                            MXN         2018-03-01       12.50          2558600.22123893824356                0.00000039083871
 Australian Dollar                       AUD         2018-03-01       12.50           174870.02212389380391                0.00000571853304
 Euro                                    EUR         2018-03-01       12.50           110619.46902654867695                0.00000904000000
-Mexican Peso                            MXN         2018-03-02       12.50          2590106.36160714303336                0.00000038608453
+Mexican Peso                            MXN         2018-03-01       12.50          2558600.22123893824356                0.00000039083871
 Australian Dollar                       AUD         2018-03-02       12.50           177055.91517857144028                0.00000564793330
 Euro                                    EUR         2018-03-02       12.50           111607.14285714285882                0.00000896000000
-Mexican Peso                            MXN         2018-03-03       12.50          2679690.27777777783865                0.00000037317746
+Mexican Peso                            MXN         2018-03-02       12.50          2590106.36160714303336                0.00000038608453
 Australian Dollar                       AUD         2018-03-03       12.50           183613.54166666668292                0.00000544622140
 Euro                                    EUR         2018-03-03       12.50           115740.74074074074507                0.00000864000000
-Mexican Peso                            MXN         2018-03-04       12.50          2710908.17757009337928                0.00000036888007
+Mexican Peso                            MXN         2018-03-03       12.50          2679690.27777777783865                0.00000037317746
 Australian Dollar                       AUD         2018-03-04       12.50           185560.04672897197454                0.00000538909112
 Euro                                    EUR         2018-03-04       12.50           116822.42990654205743                0.00000856000000
+Mexican Peso                            MXN         2018-03-04       12.50          2710908.17757009337928                0.00000036888007
 ```
 
 ### Versions
-**Current Version:** 0.04
+**Current Version:** 0.05
 #### Version 0.01
 * Initial Draft
 #### Version 0.02
@@ -132,3 +137,9 @@ Euro                                    EUR         2018-03-04       12.50      
 * Added optional parameter **symbollist** that allows filtering output by only the list of symbols in the symbolllist that match with the symbols within the [currency configurations](currency_configurations.py) (case insensitive).
 * Added optional parameter **daysinterval** that represents the number of consecutive days from the parameter datelist for the use of retrieving exchange rate within those dates. Parameter daysinterval must be a positive number and can have only one date in parameter datelist. 
 * Updated main documentation and Q&A section on existing and new features.
+#### Version 0.05
+* Script converted from **Python 2** to **Python 3**. Unfortuantely, we are dropping support for Python 2. The latest supported working version of python_currensy_fixer for Python 2 is [0.04](https://github.com/asokratis/python_currency_fixer/tree/9121bdf8660b555395956557647d7d900883e8d3). 
+* All output is sorted by date in ascending order and then by currency symbol in ascending order.
+* To keep track of all new changes properly, [currency configurations](currency_configurations.py), as well script **update_currency_configurations** is now sorted by currency symbol in ascending order.
+* Optional parameter **daysinterval** now supports negative numbers.
+* Updated main documentation on the new features and added required modules for python_currency_fixer in [requirements.txt](requirements.txt)
