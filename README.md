@@ -68,7 +68,7 @@ Users can query the exchange rate according to their needs and:
 
 #### That is a lot to type. Is there a shortcut version for doing the same thing with your script?
 
-> Yes. From the previous query, you can do the same thing by using the optional parameter **daysinterval** by typing `--datelist 2018-03-01 --daysinterval 9`. Make sure **daysinterval** is a positive number and no more than one date is entered in parameter **datelist**. Otherwise, it will not work.
+> Yes. From the previous query, you can do the same thing by using the optional parameter **daysinterval** by typing `--datelist 2018-03-01 --daysinterval 9`. Make sure only one date is entered in parameter **datelist**. Otherwise, it will not work.
 
 #### I am getting the following error: API request volume has been reached. How is that possible?
 
