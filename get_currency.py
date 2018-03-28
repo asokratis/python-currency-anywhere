@@ -1,4 +1,3 @@
-
 from urllib.request import urlopen
 from urllib.error import URLError
 import currency_configurations
@@ -80,8 +79,9 @@ def get_currency(reference_date):
             for symbol,rate in sorted(result['rates'].items()):
                 if symbol in symbols:
                     amount=args.amount.quantize(decimal.Decimal("0.01"),decimal.ROUND_HALF_UP)
-                    rate=(decimal.Decimal(rate)/denominator)*amount
-                    reciprocal_rate=(decimal.Decimal(1)/rate)
+                    rate=(decimal.Decimal(rate)/denominator)
+                    reciprocal_rate=(decimal.Decimal(1)/rate)*amount
+                    rate=rate*amount
                     rate=rate.quantize(decimal.Decimal("0.0000000000000001"),decimal.ROUND_HALF_UP)
                     reciprocal_rate=reciprocal_rate.quantize(decimal.Decimal("0.0000000000000001"),decimal.ROUND_HALF_UP)
                     output=""

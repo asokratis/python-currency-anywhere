@@ -110,22 +110,22 @@ Mexican Peso                            MXN         2018-03-01        1.00      
 ```
 Currency Name                           Symbol            Date      Amount                            Rate                 Reciprocal Rate
 ============================================================================================================================================
-Australian Dollar                       AUD         2018-03-01       12.50           174870.02212389380391                0.00000571853304
-Euro                                    EUR         2018-03-01       12.50           110619.46902654867695                0.00000904000000
-Mexican Peso                            MXN         2018-03-01       12.50          2558600.22123893824356                0.00000039083871
-Australian Dollar                       AUD         2018-03-02       12.50           177055.91517857144028                0.00000564793330
-Euro                                    EUR         2018-03-02       12.50           111607.14285714285882                0.00000896000000
-Mexican Peso                            MXN         2018-03-02       12.50          2590106.36160714303336                0.00000038608453
-Australian Dollar                       AUD         2018-03-03       12.50           183613.54166666668292                0.00000544622140
-Euro                                    EUR         2018-03-03       12.50           115740.74074074074507                0.00000864000000
-Mexican Peso                            MXN         2018-03-03       12.50          2679690.27777777783865                0.00000037317746
-Australian Dollar                       AUD         2018-03-04       12.50           185560.04672897197454                0.00000538909112
-Euro                                    EUR         2018-03-04       12.50           116822.42990654205743                0.00000856000000
-Mexican Peso                            MXN         2018-03-04       12.50          2710908.17757009337928                0.00000036888007
+Australian Dollar                       AUD         2018-03-01       12.50           174870.02212389380391                0.00089352078820
+Euro                                    EUR         2018-03-01       12.50           110619.46902654867695                0.00141250000000
+Mexican Peso                            MXN         2018-03-01       12.50          2558600.22123893824356                0.00006106854783
+Australian Dollar                       AUD         2018-03-02       12.50           177055.91517857144028                0.00088248957874
+Euro                                    EUR         2018-03-02       12.50           111607.14285714285882                0.00140000000000
+Mexican Peso                            MXN         2018-03-02       12.50          2590106.36160714303336                0.00006032570798
+Australian Dollar                       AUD         2018-03-03       12.50           183613.54166666668292                0.00085097209379
+Euro                                    EUR         2018-03-03       12.50           115740.74074074074507                0.00135000000000
+Mexican Peso                            MXN         2018-03-03       12.50          2679690.27777777783865                0.00005830897746
+Australian Dollar                       AUD         2018-03-04       12.50           185560.04672897197454                0.00084204548745
+Euro                                    EUR         2018-03-04       12.50           116822.42990654205743                0.00133750000000
+Mexican Peso                            MXN         2018-03-04       12.50          2710908.17757009337928                0.00005763751104
 ```
 
 ### Versions
-**Current Version:** [0.06](README.md#version-006)
+**Current Version:** [0.07](README.md#version-007)
 #### Version 0.01
 * Initial Draft
 #### Version 0.02
@@ -156,3 +156,5 @@ Mexican Peso                            MXN         2018-03-04       12.50      
 * Streamline output: Before, printing output was called for every API call. Now, printing output is only done once after all API calls are done.
 * Added optional flag parameter **sort_by_symbol** that sorts results instead by currency symbol in ascending order and then by date in ascending order.
 * Updated main documentation and Q&A section on existing and new features.
+#### Version 0.07
+* Fixed wrong calculation of reciprocal rate.
