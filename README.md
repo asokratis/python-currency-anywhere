@@ -2,7 +2,9 @@
 # python_currency_fixer
 Get your currency with this python script via [Fixer](https://fixer.io)<br><br>![python_currency_fixer_demo](images/python_currency_fixer_demo.gif)
 
-**Requirements: Python 3 environment with additional modules specified in [requirements.txt](requirements.txt)**<br>
+**Requirements:** 
+* **Python 3 environment with additional modules specified in [requirements.txt](requirements.txt)**
+* **Fixer API Key (accessible after [registering a subscription plan at Fixer](https://fixer.io/product))**
  ![python-logo-master](images/python_logo.png)
 
 ## configurations
