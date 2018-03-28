@@ -65,8 +65,7 @@ def get_currency(reference_date):
         else:
             url = "http://data.fixer.io/api/" + reference_date + "?access_key=" + access_key + "&base=EUR" + "&date=" + reference_date + "&symbols=" + symbols[:-1] + "," + currency_base
         if args.debug:
-            print("Debug: Running url...")
-            print("Debug: " + url)
+            print("Debug: Running url - " + url)
         html = urlopen(url)
         handler = html.read()
         result = json.loads(handler)
@@ -74,6 +73,7 @@ def get_currency(reference_date):
             print("ERROR " + str(result['error']['code']))
             print(result['error']['info'])
         else:
+            outputlist=[]
             denominator = 1
             if not args.legacy_user:
                 denominator=decimal.Decimal(result['rates'][currency_base])
@@ -84,12 +84,10 @@ def get_currency(reference_date):
                     reciprocal_rate=(decimal.Decimal(1)/rate)
                     rate=rate.quantize(decimal.Decimal("0.0000000000000001"),decimal.ROUND_HALF_UP)
                     reciprocal_rate=reciprocal_rate.quantize(decimal.Decimal("0.0000000000000001"),decimal.ROUND_HALF_UP)
-                    output = ""
-                    if args.visual:
-                        output += str(currency_configurations.currencymap[symbol]).ljust(40," ") + str(symbol).ljust(12," ") + str(reference_date).ljust(10," ") + "{0:.2f}".format(amount).rjust(12," ") + "{0:.14f}".format(rate).rjust(32," ") +  "{0:.14f}".format(reciprocal_rate).rjust(32," ")
-                    else:
-                        output += str(currency_configurations.currencymap[symbol]) + "," + str(symbol) + "," + str(reference_date) + "," + "{0:.2f}".format(amount) + "," +  "{0:.14f}".format(rate) + "," + "{0:.14f}".format(reciprocal_rate)
-                    print(str(output))
+                    output=""
+                    output += str(currency_configurations.currencymap[symbol]) + "," + str(symbol) + "," + str(reference_date) + "," + "{0:.2f}".format(amount) + "," +  "{0:.14f}".format(rate) + "," + "{0:.14f}".format(reciprocal_rate)
+                    outputlist.append(str(output))
+            return outputlist
 
 now=datetime.datetime.now()
 currentdate=now.strftime("%Y-%m-%d")
@@ -147,6 +145,10 @@ CLI.add_argument(
    "--no_header",
    action='store_true'
 )
+CLI.add_argument(
+   "--sort_by_symbol",
+   action='store_true'
+)
 args = CLI.parse_args()
 header=""
 decimal.getcontext().prec = 50
@@ -155,8 +157,6 @@ if args.visual:
     header+= "=" * 140
 else:
     header="currency_name,symbol,date,amount,rate,reciprocal_rate"
-if not args.no_header:
-    print(header)
 rendereddatelist=[]
 if args.daysinterval != 0 and len(args.datelist) != 1:
     print("Parameter --daysinterval cannot be used when parameter --datelist has more than one date.\nWhen parameter --daysinterval is in use, place only one date in parameter --datelist.")
@@ -171,6 +171,8 @@ else:
         rendereddatelist = [str((startdate + datetime.timedelta(days=x)).date()) for x in range((enddate-startdate).days + 1)]
     else:
         rendereddatelist = sorted(args.datelist)
+    resultlist=[]
+    fullresultlist=[]	
     for i in rendereddatelist:
         date_converted = validate(i)
         maximum = datetime.date.today()
@@ -180,4 +182,16 @@ else:
         elif not (args.amount >= 0.01 and args.amount <= 1000000):
             print("Amount " + str(args.amount) + " is out of bounds. Amount range must be between 0.01 and 1000000.00")
         else:
-            get_currency(i)
+            resultlist.append(get_currency(i))
+    if not args.no_header:
+        print(header)
+    for datelist in resultlist:
+        for symbollist in datelist:
+            fullresultlist.append(symbollist.split(","))
+    if args.sort_by_symbol:
+        fullresultlist = sorted(fullresultlist, key=lambda row:(row[1],row[2]), reverse=False)
+    for columnlist in fullresultlist:
+        if args.visual:
+            print(columnlist[0].ljust(40," ") + columnlist[1].ljust(12," ") + columnlist[2].ljust(10," ") + "{0:.2f}".format(decimal.Decimal(columnlist[3])).rjust(12," ") + "{0:.14f}".format(decimal.Decimal(columnlist[4])).rjust(32," ") +  "{0:.14f}".format(decimal.Decimal(columnlist[5])).rjust(32," "))
+        else: 
+            print(columnlist[0]+","+columnlist[1]+","+columnlist[2]+","+columnlist[3]+","+columnlist[4]+","+columnlist[5])

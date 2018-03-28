@@ -9,7 +9,7 @@ Get your currency with this python script via [Fixer](https://fixer.io)<br><br>!
 To update existing [currency_configurations](currency_configurations.py), run [update_currency_configurations](update_currency_configurations.py) while providing your Fixer API Key as parameter. You can update the maximum number of failed attempts on requesting currency data at [retry_configurations](retry_configurations.py). 
 
 ## get_currency
-By default, uses [Fixer](https://fixer.io) free and legacy accounts to display exchange rate for all currencies with EUR as base currency in the amounts of one unit for today's date. Results are sorted by date and then by currency symbol in ascending order. 
+By default, uses [Fixer](https://fixer.io) free and legacy accounts to display exchange rate for all currencies with EUR as base currency in the amounts of one unit for today's date. Results are sorted by date in ascending order and then by currency symbol in ascending order. 
 
 ### Purpose
 Users can query the exchange rate according to their needs and: 
@@ -34,6 +34,7 @@ Users can query the exchange rate according to their needs and:
 * **visual**: Makes output human readable instead of csv format.
 * **legacy_user**: For a limited time, [Fixer currently offers additional features for free to legacy users](https://fixer.io/signup/legacy), such as the ability to use any currency as your base and SSL support. Please turn this flag on if you are a legacy user. If this flag is turned off, our script will do some workarounds to still be able to use any currency as your base.
 * **no_header**: Output does not display header which can be useful when appending data to existing files.
+* **sort_by_symbol**: By default, the output is sorted by date in ascending order and then by currency symbol in ascending order. This flag overrides the default sorting with currency symbol in ascending order and then by date in ascending order.
 
 ### Output 
 **1. currency_name** (Currency Name)<br>
@@ -51,6 +52,10 @@ Users can query the exchange rate according to their needs and:
 
 > You can either use optional parameter **currencynamelist** for entering a list that is similar to the currency name list within our [currency configurations](currency_configurations.py) or use the optional parameter **symbollist** for entering a list of symbols that match with the symbols list found in our [currency configurations](currency_configurations.py) (case insensitive).  
 
+#### How do I sort the output?
+
+> By default, the output is sorted by date in ascending order and then by currency symbol in ascending order. Use the optional flag parameter **sort_by_symbol** to sort instead by currency symbol in ascending order and then by date in ascending order.
+
 #### I am a free user in Fixer. Can I use any base currencies with this script?
 
 > Yes. Currently, Fixer only allows EUR as their base currency for free users. Our script does some workarounds to closely resemble of fetching results with a different base currency. If you used the old Fixer without API key, for a limited time, you can use any base currency by registering a [legacy account](https://fixer.io/signup/legacy). Just do not forget to add the flag parameter **legacy_user** when using our script.
@@ -62,6 +67,10 @@ Users can query the exchange rate according to their needs and:
 #### That is a lot to type. Is there a shortcut version for doing the same thing with your script?
 
 > Yes. From the previous query, you can do the same thing by using the optional parameter **daysinterval** by typing `--datelist 2018-03-01 --daysinterval 9`. Make sure **daysinterval** is a positive number and no more than one date is entered in parameter **datelist**. Otherwise, it will not work.
+
+#### I getting an error that my API request volume has been reached. How is that possible?
+
+> [Each plan](https://fixer.io/product) has a quota of how many API calls you can do per month. At the moment of this writing, free accounts are allowed to make up to a thousand API calls per month. Some of the reasons where your API limit has reached could be due to calling our script too often or requesting a long date range within our script. Did you know that requesting rates between 2018-03-01 to 2018-03-10 costs ten API calls even when you run this script only once? One way to save the number of API calls you do per month is by [storing the data you frequently use in a flat file](README.md#do-you-have-the-option-for-saving-my-csv-output-into-a-flatfile) which can be later used as a source by storing it into a data lake/database/spreadsheet.
 
 #### I am a free user in Fixer. I do not have access to the Conversion Endpoint. Can I use your script to do that?
 
@@ -77,11 +86,11 @@ Users can query the exchange rate according to their needs and:
 
 #### Do you have the option for saving my CSV output into a flatfile?
 
-> We currently are not planning to add this feature in our next updates :neutral_face:<br><br>If you are in a linux environment, you have the ability to write the CSV output into a new flatfile by typing `python3 get_currency.py "<access-key-id>" > myflatfile.csv` or append to an existing flatfile by typing `python3 get_currency.py "<access-key-id>" --no_header >> myflatfile.csv` 
+> If you are in a linux environment, you have the ability to write the CSV output into a new flatfile by typing `python3 get_currency.py "<access-key-id>" > myflatfile.csv` or append to an existing flatfile by typing `python3 get_currency.py "<access-key-id>" --no_header >> myflatfile.csv` 
 
 #### Do you have the option for getting only the columns I need?
 
-> We currently are not planning to add this feature in our next updates :neutral_face:<br><br>If you are in a linux environment and already saved your CSV output into a flatfile (see previous question), then by checking the [list of columns we output](README.md#output), you can create a new flatfile by creating only the columns you need. For instance, if we want from `myflatfile.csv` only the `symbol` and `rate` in a new flatfile called `derivedflatfile.csv`, then we type `cut -d ',' -f 2,5 myflatfile.csv > derivedflatfile.csv` 
+> If you are in a linux environment and already saved your CSV output into a flatfile (see previous question), then by checking the [list of columns we output](README.md#output), you can create a new flatfile by creating only the columns you need. For instance, if we want from `myflatfile.csv` only the `symbol` and `rate` in a new flatfile called `derivedflatfile.csv`, then we type `cut -d ',' -f 2,5 myflatfile.csv > derivedflatfile.csv` 
 
 ### Examples
 
@@ -143,3 +152,7 @@ Mexican Peso                            MXN         2018-03-04       12.50      
 * To keep track of all new changes properly, [currency configurations](currency_configurations.py), as well script **update_currency_configurations** is now sorted by currency symbol in ascending order.
 * Optional parameter **daysinterval** now supports negative numbers.
 * Updated main documentation on the new features and added required modules for python_currency_fixer in [requirements.txt](requirements.txt)
+#### Version 0.06
+* Streamline output: Before, printing output was called for every API call. Now, printing output is only done once after all API calls are done.
+* Added optional flag parameter **sort_by_symbol** that sorts results instead by currency symbol in ascending order and then by date in ascending order.
+* Updated main documentation and Q&A section on existing and new features.
