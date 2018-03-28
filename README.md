@@ -68,7 +68,7 @@ Users can query the exchange rate according to their needs and:
 
 > Yes. From the previous query, you can do the same thing by using the optional parameter **daysinterval** by typing `--datelist 2018-03-01 --daysinterval 9`. Make sure **daysinterval** is a positive number and no more than one date is entered in parameter **datelist**. Otherwise, it will not work.
 
-#### I getting an error that my API request volume has been reached. How is that possible?
+#### I am getting the following error: API request volume has been reached. How is that possible?
 
 > [Each plan](https://fixer.io/product) has a quota of how many API calls you can do per month. At the moment of this writing, free accounts are allowed to make up to a thousand API calls per month. Some of the reasons where your API limit has reached could be due to calling our script too often or requesting a long date range within our script. Did you know that requesting rates between 2018-03-01 to 2018-03-10 costs ten API calls even when you run this script only once? One way to save the number of API calls you do per month is by [storing the data you frequently use in a flat file](README.md#do-you-have-the-option-for-saving-my-csv-output-into-a-flatfile) which can be later used as a source by storing it into a data lake/database/spreadsheet.
 
@@ -125,7 +125,7 @@ Mexican Peso                            MXN         2018-03-04       12.50      
 ```
 
 ### Versions
-**Current Version:** [0.05](README.md#version-005)
+**Current Version:** [0.06](README.md#version-006)
 #### Version 0.01
 * Initial Draft
 #### Version 0.02
