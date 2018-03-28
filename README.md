@@ -138,7 +138,7 @@ Mexican Peso                            MXN         2018-03-04       12.50      
 * Added optional parameter **daysinterval** that represents the number of consecutive days from the parameter datelist for the use of retrieving exchange rate within those dates. Parameter daysinterval must be a positive number and can have only one date in parameter datelist. 
 * Updated main documentation and Q&A section on existing and new features.
 #### Version 0.05
-* Script converted from **Python 2** to **Python 3**. Unfortunately, we are dropping support for Python 2. The latest supported working version of python_currensy_fixer for Python 2 is [0.04](https://github.com/asokratis/python_currency_fixer/tree/9121bdf8660b555395956557647d7d900883e8d3). 
+* Script converted from **Python 2** to **Python 3**. Unfortunately, we are dropping support for Python 2. The latest supported working version of python_currensy_fixer for Python 2 is [Version 0.04](https://github.com/asokratis/python_currency_fixer/releases/tag/v0.04). 
 * All output is sorted by date in ascending order and then by currency symbol in ascending order.
 * To keep track of all new changes properly, [currency configurations](currency_configurations.py), as well script **update_currency_configurations** is now sorted by currency symbol in ascending order.
 * Optional parameter **daysinterval** now supports negative numbers.
