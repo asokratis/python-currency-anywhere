@@ -104,7 +104,6 @@ with open("myflatfile.csv", mode='r',encoding='utf-8') as f:
     currencylist = [line.strip().split(",") for line in f]
 
 header="Symbol".ljust(12," ") + "Date".ljust(14," ") + "Perc Diff".rjust(32," ") + "Rate".rjust(32," ") + "Difference".rjust(32," ") + "\n"
-print(header)
 rate=decimal.Decimal(0)
 currencysymbol=""
 counter=0
