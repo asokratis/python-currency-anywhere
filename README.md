@@ -94,6 +94,34 @@ Users can query the exchange rate according to their needs and:
 
 > If you are in a linux environment and already saved your CSV output into a flatfile (see previous question), then by checking the [list of columns we output](README.md#output), you can create a new flatfile by creating only the columns you need. For instance, if we want from `myflatfile.csv` only the `symbol` and `rate` in a new flatfile called `derivedflatfile.csv`, then we type `cut -d ',' -f 2,5 myflatfile.csv > derivedflatfile.csv` 
 
+#### I am a free user in Fixer. I do not have access to the Fluctuation Data Endpoint. Can I use your script to do that?
+
+> Assuming you used the flag **sort_by_symbol** within our script and saved the output into a flat file named `myflatfile.csv` (see the previous question), then you can get the difference and percentage difference by running the following python script (amount and reciprocal_rate omitted within the output):
+```python
+import decimal
+currencylist=[]
+with open("myflatfile.csv", mode='r',encoding='utf-8') as f:
+    currencylist = [line.strip().split(",") for line in f]
+
+header="Symbol".ljust(12," ") + "Date".ljust(14," ") + "Perc Diff".rjust(32," ") + "Rate".rjust(32," ") + "Difference".rjust(32," ") + "\n"
+print(header)
+rate=decimal.Decimal(0)
+currencysymbol=""
+counter=0
+for x in currencylist:
+    if counter == 0:
+        print(header)
+    elif counter > 0:
+        if currencysymbol == str(x[1]) and rate != 0:
+            print( str(x[1]).ljust(12," ") + str(x[2]).ljust(14," ") + "{0:.14f}".format((((decimal.Decimal(x[4]) - rate) / rate)*100).quantize(decimal.Decimal("0.0000000000000001"),decimal.ROUND_HALF_UP) ).rjust(32," ") + str(x[4]).rjust(32," ") + "{0:.14f}".format( (decimal.Decimal(x[4]) - rate) ).rjust(32," "))
+            rate=decimal.Decimal(x[4])
+        else:
+             print( str(x[1]).ljust(12," ") + str(x[2]).ljust(14," ") + "{0:.14f}".format(decimal.Decimal(0)).rjust(32," ") + str(x[4]).rjust(32," ") + "{0:.14f}".format(decimal.Decimal(0)).rjust(32," "))     
+             currencysymbol=str(x[1])  
+             rate=decimal.Decimal(x[4])
+    counter += 1
+```
+
 ### Examples
 
 `python3 get_currency.py <access-key-id> --visual --datelist 2018-03-01 2017-03-01 --currencynamelist mex aus eur`
