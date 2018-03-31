@@ -116,6 +116,29 @@ Users can query the exchange rate according to their needs and:
 
 > If you are in a linux environment and already saved your CSV output into a flatfile (see previous question), then by checking the [list of columns we output](README.md#output), you can create a new flatfile by creating only the columns you need. For instance, if we want from `myflatfile.csv` only the `symbol` and `rate` in a new flatfile called `derivedflatfile.csv`, then we type `cut -d ',' -f 2,5 myflatfile.csv > derivedflatfile.csv` 
 
+#### Great! How do I store my flat file into a database?
+
+> For starters, try [SQLite in Python](http://sebastianraschka.com/Articles/2014_sqlite_in_python_tutorial.html). Assuming you have a flatfile called `feb2018.csv`, you can do the following:
+```python
+import csv, sqlite3
+
+sqlite_file = 'my_db.sqlite'
+con = sqlite3.connect(sqlite_file)
+cur = con.cursor()
+cur.execute("CREATE TABLE currency_base_eur (symbol, date, rate);”) 
+
+with open(‘feb2018.csv','r') as fin:
+    dr = csv.DictReader(fin) 
+    to_db = [(i[‘symbol’], i[‘date’], i[‘rate’]) for i in dr]
+
+cur.executemany("INSERT INTO currency_base_eur (symbol, date, rate) VALUES (?, ?, ?);”, to_db)
+con.commit()
+cur.execute("SELECT * FROM currency_base_eur WHERE symbol = 'USD';")
+all_rows = cur.fetchall()
+print(all_rows)
+con.close()
+```
+
 ### Examples
 
 `python3 get_currency.py <access-key-id> --visual --datelist 2018-03-01 2017-03-01 --currencynamelist mex aus eur`
