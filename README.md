@@ -7,6 +7,20 @@ Get your currency with this python script via [Fixer](https://fixer.io)<br><br>!
 * **Fixer API Key (accessible after [registering a subscription plan at Fixer](https://fixer.io/product))**
  ![python-logo-master](images/python_logo.png)
 
+## Installation
+* [Create your Fixer account](https://fixer.io/product)
+* Once logged in at Fixer, get your API key from your dashboard.
+* Set up your environment and run the script by doing the following: **[1]**   
+```shell
+git clone https://github.com/asokratis/python-currency-fixer
+cd python-currency-fixer
+sudo pip3 install -r requirements.txt 
+python3 update_currency_configurations.py <apiaccesskey>
+python3 get_currency.py <apiaccesskey>
+```
+**[1]** _Replace `<apiaccesskey>` with the API key you retrieved previously._<br>
+**[1]** _If you have encoding errors when running the script, you may additionally need to run `export PYTHONIOENCODING=utf_8`_
+
 ## configurations
 To update existing [currency_configurations](currency_configurations.py), run [update_currency_configurations](update_currency_configurations.py) while providing your Fixer API Key as parameter. You can update the maximum number of failed attempts on requesting currency data at [retry_configurations](retry_configurations.py). 
 
@@ -37,6 +51,7 @@ Users can query the exchange rate according to their needs and:
 * **legacy_user**: For a limited time, [Fixer currently offers additional features for free to legacy users](https://fixer.io/signup/legacy), such as the ability to use any currency as your base and SSL support. Please turn this flag on if you are a legacy user. If this flag is turned off, our script will do some workarounds to still be able to use any currency as your base.
 * **no_header**: Output does not display header which can be useful when appending data to existing files.
 * **sort_by_symbol**: By default, the output is sorted by date in ascending order and then by currency symbol in ascending order. This flag overrides the default sorting with currency symbol in ascending order and then by date in ascending order.
+* **output_fluctuation**: Sorts output in the same format as flag parameter sort_by_symbol and displays fluctuation data by adding the following two columns within the output: perc_diff and difference.
 
 ### Output 
 **1. currency_name** (Currency Name)<br>
@@ -45,10 +60,17 @@ Users can query the exchange rate according to their needs and:
 **4. amount** (Amount)<br>
 **5. rate** (Rate)<br>
 **6. reciprocal_rate** (Reciprocal Rate)<br>
+**7. perc_diff** (Perc. Diff.) **[2]**<br>
+**8. difference** (Difference) **[2]**<br>
 
-**[1]** _parenthesis = column name when visual flag is turned on_
+**[1]** _parenthesis = column name when visual flag is turned on_<br>
+**[2]** _these columns only show up when flag parameter output_fluctuation is enabled_
 
 ### Q&A
+
+#### What do you output? What choices do I have for the output?
+
+> Check the [list of columns we output](README.md#output) for more info.<br><br>We currently have two choices for output: CSV and human-readable. To see your output in a human-readable format, add the flag parameter **visual**. 
 
 #### How do I filter output to only the currencies I need?
 
@@ -56,7 +78,7 @@ Users can query the exchange rate according to their needs and:
 
 #### How do I sort the output?
 
-> By default, the output is sorted by date in ascending order and then by currency symbol in ascending order. Use the optional flag parameter **sort_by_symbol** to sort instead by currency symbol in ascending order and then by date in ascending order.
+> By default, the output is sorted by date in ascending order and then by currency symbol in ascending order. Use the flag parameter **sort_by_symbol** to sort instead by currency symbol in ascending order and then by date in ascending order.
 
 #### I am a free user in Fixer. Can I use any base currencies with this script?
 
@@ -78,9 +100,9 @@ Users can query the exchange rate according to their needs and:
 
 > Yes. You can get your desired conversion by using the optional parameter **amount** which will reflect on the rate and reciprocal rate columns. **amount** can take values between one hundredth to one million. 
 
-#### What do you output? What choices do I have for the output?
+#### I am a free user in Fixer. I do not have access to the Fluctuation Data Endpoint. Can I use your script to do that?
 
-> Check the [list of columns we output](README.md#output) for more info.<br><br>We currently have two choices for output: CSV and human-readable. To see your output in a human-readable format, add the flag parameter **visual**. 
+> Yes. You can get fluctuation data by using the optional flag parameter **output_fluctuation**. Other than the output will be sorted in the same format optional flag parameter **sort_by_symbol** does, you will get two new columns in your output: **perc_diff.** and **difference**. 
 
 #### Your currency configurations are out of date? Do I have to update your currency configurations manually?
 
@@ -93,33 +115,6 @@ Users can query the exchange rate according to their needs and:
 #### Do you have the option for getting only the columns I need?
 
 > If you are in a linux environment and already saved your CSV output into a flatfile (see previous question), then by checking the [list of columns we output](README.md#output), you can create a new flatfile by creating only the columns you need. For instance, if we want from `myflatfile.csv` only the `symbol` and `rate` in a new flatfile called `derivedflatfile.csv`, then we type `cut -d ',' -f 2,5 myflatfile.csv > derivedflatfile.csv` 
-
-#### I am a free user in Fixer. I do not have access to the Fluctuation Data Endpoint. Can I use your script to do that?
-
-> Assuming you used the flag **sort_by_symbol** within our script and saved the output into a flat file named `myflatfile.csv` (see the previous question), then you can get the difference and percentage difference by running the following python script (amount and reciprocal_rate omitted within the output):
-```python
-import decimal
-currencylist=[]
-with open("myflatfile.csv", mode='r',encoding='utf-8') as f:
-    currencylist = [line.strip().split(",") for line in f]
-
-header="Symbol".ljust(12," ") + "Date".ljust(14," ") + "Perc Diff".rjust(32," ") + "Rate".rjust(32," ") + "Difference".rjust(32," ") + "\n"
-rate=decimal.Decimal(0)
-currencysymbol=""
-counter=0
-for x in currencylist:
-    if counter == 0:
-        print(header)
-    elif counter > 0:
-        if currencysymbol == str(x[1]) and rate != 0:
-            print( str(x[1]).ljust(12," ") + str(x[2]).ljust(14," ") + "{0:.14f}".format((((decimal.Decimal(x[4]) - rate) / rate)*100).quantize(decimal.Decimal("0.0000000000000001"),decimal.ROUND_HALF_UP) ).rjust(32," ") + str(x[4]).rjust(32," ") + "{0:.14f}".format( (decimal.Decimal(x[4]) - rate) ).rjust(32," "))
-            rate=decimal.Decimal(x[4])
-        else:
-             print( str(x[1]).ljust(12," ") + str(x[2]).ljust(14," ") + "{0:.14f}".format(decimal.Decimal(0)).rjust(32," ") + str(x[4]).rjust(32," ") + "{0:.14f}".format(decimal.Decimal(0)).rjust(32," "))     
-             currencysymbol=str(x[1])  
-             rate=decimal.Decimal(x[4])
-    counter += 1
-```
 
 ### Examples
 
@@ -154,7 +149,7 @@ Mexican Peso                            MXN         2018-03-04       12.50      
 ```
 
 ### Versions
-**Current Version:** [0.07](README.md#version-007)
+**Current Version:** [0.08](README.md#version-008)
 #### Version 0.01
 * Initial Draft
 #### Version 0.02
@@ -183,7 +178,12 @@ Mexican Peso                            MXN         2018-03-04       12.50      
 * Updated main documentation on the new features and added required modules for python_currency_fixer in [requirements.txt](requirements.txt)
 #### Version 0.06
 * Streamline output: Before, printing output was called for every API call. Now, printing output is only done once after all API calls are done.
-* Added optional flag parameter **sort_by_symbol** that sorts results instead by currency symbol in ascending order and then by date in ascending order.
+* Added flag parameter **sort_by_symbol** that sorts results instead by currency symbol in ascending order and then by date in ascending order.
 * Updated main documentation and Q&A section on existing and new features.
 #### Version 0.07
 * Fixed wrong calculation of reciprocal rate.
+#### Version 0.08
+* Added flag parameter **output_fluctuation** that sorts output in the same format as flag parameter sort_by_symbol and displays fluctuation data by adding the following two columns within the output: **perc_diff** and **difference**.
+* Added new section within documentation: **Installation**.
+* Fixed encoding issues when running **update_currency_configurations**.
+* Updated main documentation and Q&A section on existing and new features.

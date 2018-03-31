@@ -149,18 +149,30 @@ CLI.add_argument(
    "--sort_by_symbol",
    action='store_true'
 )
+CLI.add_argument(
+   "--output_fluctuation",
+   action='store_true'
+)
 args = CLI.parse_args()
 header=""
+header1=""
+header2=""
 decimal.getcontext().prec = 50
 if args.visual:
-    header=  "Currency Name".ljust(40," ") + "Symbol".ljust(12," ") + "Date".rjust(10," ") + "Amount".rjust(12," ") + "Rate".rjust(32," ") + "Reciprocal Rate".rjust(32," ") + "\n"
-    header+= "=" * 140
+    header1= "Currency Name".ljust(40," ") + "Symbol".ljust(12," ") + "Date".rjust(10," ") + "Amount".rjust(12," ") + "Rate".rjust(32," ") + "Reciprocal Rate".rjust(32," ")
+    header2= "=" * 140
+    if args.output_fluctuation:
+        header1+= "Perc. Diff.".rjust(16," ") + "Difference".rjust(32," ")
+        header2+= "=" * 48
+    header=header1+"\n"+header2
 else:
     header="currency_name,symbol,date,amount,rate,reciprocal_rate"
+    if args.output_fluctuation:
+        header+=",perc_diff,difference"
 rendereddatelist=[]
 if args.daysinterval != 0 and len(args.datelist) != 1:
     print("Parameter --daysinterval cannot be used when parameter --datelist has more than one date.\nWhen parameter --daysinterval is in use, place only one date in parameter --datelist.")
-else: 
+else:
     if args.daysinterval != 0 and len(args.datelist) == 1:
         if args.daysinterval > 0:
             startdate=validate(args.datelist[0])
@@ -172,7 +184,7 @@ else:
     else:
         rendereddatelist = sorted(args.datelist)
     resultlist=[]
-    fullresultlist=[]	
+    fullresultlist=[]
     for i in rendereddatelist:
         date_converted = validate(i)
         maximum = datetime.date.today()
@@ -188,10 +200,28 @@ else:
     for datelist in resultlist:
         for symbollist in datelist:
             fullresultlist.append(symbollist.split(","))
-    if args.sort_by_symbol:
+    if args.sort_by_symbol or args.output_fluctuation:
         fullresultlist = sorted(fullresultlist, key=lambda row:(row[1],row[2]), reverse=False)
+    lastrate=decimal.Decimal(0)
+    lastcurrencysymbol=""
     for columnlist in fullresultlist:
+        fluctuationoutput=""
+        if args.output_fluctuation:
+            if lastcurrencysymbol == str(columnlist[1]) and lastrate != 0:
+                perc_diff = (((decimal.Decimal(columnlist[4]) - lastrate) / lastrate)*100)
+                difference = (decimal.Decimal(columnlist[4]) - lastrate)
+            else:
+                perc_diff  = decimal.Decimal(0.0)
+                difference = decimal.Decimal(0.0)
+                lastcurrencysymbol=str(columnlist[1])
+            lastrate=decimal.Decimal(columnlist[4])
+            difference=difference.quantize(decimal.Decimal("0.0000000000000001"),decimal.ROUND_HALF_UP)
+            perc_diff=perc_diff.quantize(decimal.Decimal("0.0001"),decimal.ROUND_HALF_UP)
+            if args.visual:
+                fluctuationoutput="{0:.4f}".format(decimal.Decimal(perc_diff)).rjust(16," ")+"{0:.14f}".format(decimal.Decimal(difference)).rjust(32," ")
+            else:
+                fluctuationoutput=","+"{0:.4f}".format(decimal.Decimal(perc_diff))+","+"{0:.14f}".format(decimal.Decimal(difference))
         if args.visual:
-            print(columnlist[0].ljust(40," ") + columnlist[1].ljust(12," ") + columnlist[2].ljust(10," ") + "{0:.2f}".format(decimal.Decimal(columnlist[3])).rjust(12," ") + "{0:.14f}".format(decimal.Decimal(columnlist[4])).rjust(32," ") +  "{0:.14f}".format(decimal.Decimal(columnlist[5])).rjust(32," "))
-        else: 
-            print(columnlist[0]+","+columnlist[1]+","+columnlist[2]+","+columnlist[3]+","+columnlist[4]+","+columnlist[5])
+            print(columnlist[0].ljust(40," ") + columnlist[1].ljust(12," ") + columnlist[2].ljust(10," ") + "{0:.2f}".format(decimal.Decimal(columnlist[3])).rjust(12," ") + "{0:.14f}".format(decimal.Decimal(columnlist[4])).rjust(32," ") +  "{0:.14f}".format(decimal.Decimal(columnlist[5])).rjust(32," ") + fluctuationoutput)
+        else:
+            print(columnlist[0]+","+columnlist[1]+","+columnlist[2]+","+columnlist[3]+","+columnlist[4]+","+columnlist[5]+fluctuationoutput)
