@@ -16,7 +16,7 @@ if result["success"] == False:
     print("ERROR " + str(result['error']['code']))
     print(result['error']['info'])
 else:
-    file = open('currency_configurations.py',mode='w',encoding='utf-8')
+    file = open('configurations/currency_configurations.py',mode='w',encoding='utf-8')
     file.write("# -*- coding: utf-8 -*-\n")
     file.write("currencymap = {\n")
     is_first = True

@@ -1,13 +1,14 @@
 from urllib.request import urlopen
 from urllib.error import URLError
-import currency_configurations
-import retry_configurations
+from configurations import currency_configurations
+from configurations import retry_configurations
 import datetime
 import argparse
 import time
 import simplejson as json
 from functools import wraps
 import decimal
+import csv, sqlite3
 
 # Trying out a Retry decorator in Python = https://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/
 def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
@@ -49,8 +50,28 @@ def get_currency(reference_date):
     usersymbol=args.symbollist
     access_key=args.apiaccesskey
     symbols=""
+    url=""
+    query=""
     inputvalues  = [item.lower() for item in search]
     inputsymbols = [item.lower() for item in usersymbol]
+    cur.execute("SELECT COUNT(*) FROM currency WHERE date = '%s'" % reference_date + ";")
+    if (cur.fetchall()[0])[0] == 0:
+        if args.legacy_user:
+            url = "https://data.fixer.io/api/" + reference_date + "?access_key=" + access_key + "&base=" + currency_base
+        else:
+            url = "http://data.fixer.io/api/" + reference_date + "?access_key=" + access_key + "&base=EUR" 
+        if args.debug:
+            print("Debug: Calling API to cache data from " + url)
+        html = urlopen(url)
+        handler = html.read()
+        result = json.loads(handler)
+        if result["success"] == False:
+            print("ERROR " + str(result['error']['code']))
+            print(result['error']['info'])
+        else:
+            to_db = [(key,reference_date,value) for key,value in result['rates'].items()]
+            cur.executemany("INSERT INTO currency (symbol, date, rate) VALUES (?, ?, ?);", to_db)
+            con.commit() 
     for key, value in currency_configurations.currencymap.items():
         if any(inputvalue in value.lower() for inputvalue in inputvalues) and any(inputsymbol==key.lower() for inputsymbol in inputsymbols):
             symbols+=(key + ",")
@@ -60,34 +81,29 @@ def get_currency(reference_date):
         print("Currency base was not found. Please try again and check currency configuration for the list of currency.")
     else:
         if args.legacy_user:
-            url = "https://data.fixer.io/api/" + reference_date + "?access_key=" + access_key + "&base=" + currency_base + "&date=" + reference_date + "&symbols=" + symbols[:-1]
+            query = "select symbol, rate from currency where date = '%s'" % reference_date + " and upper(symbol) IN (%s) " % ','.join("'" + symbol + "'" for symbol in symbols[:-1].split(","))
         else:
-            url = "http://data.fixer.io/api/" + reference_date + "?access_key=" + access_key + "&base=EUR" + "&date=" + reference_date + "&symbols=" + symbols[:-1] + "," + currency_base
+            query = "select symbol, rate from currency where date = '%s'" % reference_date + " and upper(symbol) IN (%s "  % ','.join("'" + symbol + "'" for symbol in symbols[:-1].split(",")) + ",'%s')" % currency_base
         if args.debug:
-            print("Debug: Running url - " + url)
-        html = urlopen(url)
-        handler = html.read()
-        result = json.loads(handler)
-        if result["success"] == False:
-            print("ERROR " + str(result['error']['code']))
-            print(result['error']['info'])
-        else:
-            outputlist=[]
-            denominator = 1
-            if not args.legacy_user:
-                denominator=decimal.Decimal(result['rates'][currency_base])
-            for symbol,rate in sorted(result['rates'].items()):
-                if symbol in symbols:
-                    amount=args.amount.quantize(decimal.Decimal("0.01"),decimal.ROUND_HALF_UP)
-                    rate=(decimal.Decimal(rate)/denominator)
-                    reciprocal_rate=(decimal.Decimal(1)/rate)*amount
-                    rate=rate*amount
-                    rate=rate.quantize(decimal.Decimal("0.0000000000000001"),decimal.ROUND_HALF_UP)
-                    reciprocal_rate=reciprocal_rate.quantize(decimal.Decimal("0.0000000000000001"),decimal.ROUND_HALF_UP)
-                    output=""
-                    output += str(currency_configurations.currencymap[symbol]) + "," + str(symbol) + "," + str(reference_date) + "," + "{0:.2f}".format(amount) + "," +  "{0:.14f}".format(rate) + "," + "{0:.14f}".format(reciprocal_rate)
-                    outputlist.append(str(output))
-            return outputlist
+            print("Debug: Running query: " + query)
+        cur.execute(query)
+        finalresult = dict(cur.fetchall())
+        outputlist=[]
+        denominator = 1
+        if not args.legacy_user:
+            denominator=decimal.Decimal(finalresult[currency_base])
+        for symbol,rate in sorted(finalresult.items()):
+            if symbol in symbols:
+                amount=args.amount.quantize(decimal.Decimal("0.01"),decimal.ROUND_HALF_UP)
+                rate=(decimal.Decimal(rate)/denominator)
+                reciprocal_rate=(decimal.Decimal(1)/rate)*amount
+                rate=rate*amount
+                rate=rate.quantize(decimal.Decimal("0.0000000000000001"),decimal.ROUND_HALF_UP)
+                reciprocal_rate=reciprocal_rate.quantize(decimal.Decimal("0.0000000000000001"),decimal.ROUND_HALF_UP)
+                output=""
+                output += str(currency_configurations.currencymap[symbol]) + "," + str(symbol) + "," + str(reference_date) + "," + "{0:.2f}".format(amount) + "," +  "{0:.14f}".format(rate) + "," + "{0:.14f}".format(reciprocal_rate)
+                outputlist.append(str(output))
+        return outputlist
 
 now=datetime.datetime.now()
 currentdate=now.strftime("%Y-%m-%d")
@@ -185,6 +201,15 @@ else:
         rendereddatelist = sorted(args.datelist)
     resultlist=[]
     fullresultlist=[]
+    sqlite_file='data/currency_'
+    if args.legacy_user:
+        sqlite_file += args.basecurrency.lower() + '.sqlite'
+    else:
+        sqlite_file += "eur.sqlite" 
+    con = sqlite3.connect(sqlite_file)
+    cur = con.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS currency (symbol, date, rate);")
+    con.commit()
     for i in rendereddatelist:
         date_converted = validate(i)
         maximum = datetime.date.today()
@@ -225,3 +250,4 @@ else:
             print(columnlist[0].ljust(40," ") + columnlist[1].ljust(12," ") + columnlist[2].ljust(10," ") + "{0:.2f}".format(decimal.Decimal(columnlist[3])).rjust(12," ") + "{0:.14f}".format(decimal.Decimal(columnlist[4])).rjust(32," ") +  "{0:.14f}".format(decimal.Decimal(columnlist[5])).rjust(32," ") + fluctuationoutput)
         else:
             print(columnlist[0]+","+columnlist[1]+","+columnlist[2]+","+columnlist[3]+","+columnlist[4]+","+columnlist[5]+fluctuationoutput)
+    con.close()

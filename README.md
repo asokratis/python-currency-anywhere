@@ -7,6 +7,13 @@ Get your currency with this python script via [Fixer](https://fixer.io)<br><br>!
 * **Fixer API Key (accessible after [registering a subscription plan at Fixer](https://fixer.io/product))**
  ![python-logo-master](images/python_logo.png)
 
+## Why use python-currency-fixer?
+ ![whyuse](images/why_use.png)
+* **User-Friendly**: With thorough documentation and debugging provided, you will never be lost.
+* **Cached**: Relying all your requests on Fixer API will make you reach your monthly API limits in no time. With our script storing all your requests on your local database, you will never have to worry about limits anymore.
+* **Features**: With just a free Fixer account, we are able to simulate within our script all premium features Fixer provides.
+* **Outputs**: Get your output in a human-readable way through your terminal or save your output to a new flat file.
+
 ## Installation
 * [Create your Fixer account](https://fixer.io/product)
 * Once logged in at Fixer, get your API key from your dashboard.
@@ -22,12 +29,12 @@ python3 get_currency.py <apiaccesskey>
 **[1]** _If you have encoding errors when running the script, you may additionally need to run `export PYTHONIOENCODING=utf_8`_
 
 ## configurations
-To update existing [currency_configurations](currency_configurations.py), run [update_currency_configurations](update_currency_configurations.py) while providing your Fixer API Key as parameter. You can update the maximum number of failed attempts on requesting currency data at [retry_configurations](retry_configurations.py). 
+To update existing [currency_configurations](configurations/currency_configurations.py), run [update_currency_configurations](update_currency_configurations.py) while providing your Fixer API Key as parameter. You can update the maximum number of failed attempts on requesting currency data at [retry_configurations](configurations/retry_configurations.py). 
 
 ## get_currency
-By default, uses [Fixer](https://fixer.io) free and legacy accounts to display exchange rate for all currencies with EUR as base currency in the amounts of one unit for today's date. Results are sorted by date in ascending order and then by currency symbol in ascending order. 
+By default, uses [Fixer](https://fixer.io) free and legacy/basic accounts to display exchange rate for all currencies with EUR as the base currency in the amounts of one unit for today's date. Results are sorted by date in ascending order and then by currency symbol in ascending order. Results are also cached by date (and base currency if using legacy/basic accounts) so next time they are requested, you are not charged an API call.
 
-### Purpose
+### General Purpose
 Users can query the exchange rate according to their needs and: 
 * See the results in a command line interface of their choice 
 * [Store the results in a flat file for later use](README.md#do-you-have-the-option-for-saving-my-csv-output-into-a-flatfile)
@@ -37,8 +44,8 @@ Users can query the exchange rate according to their needs and:
 
 ### Optional Parameters
 * **datelist**: Date list where each date is in YYYY-MM-DD format. Used for retrieving exchange rate within the time points specified in date list. If not specified, uses today's date **[1]**.
-* **currencynamelist**: Currency name list where each currency name represents a wildcard for matching any currencies from currency dictionary found within [currency configurations](currency_configurations.py)
-* **symbollist**: Currency symbol list where each currency symbol must match to any currency symbols from currency dictionary found within [currency configurations](currency_configurations.py) (case insensitive)
+* **currencynamelist**: Currency name list where each currency name represents a wildcard for matching any currencies from currency dictionary found within [currency configurations](configurations/currency_configurations.py)
+* **symbollist**: Currency symbol list where each currency symbol must match to any currency symbols from currency dictionary found within [currency configurations](configurations/currency_configurations.py) (case insensitive)
 * **basecurrency**: Currency base for calculating the exchange rate represented as currency symbol.
 * **amount**: The amount to be converted from the base currency. Amount can be between the values of one hundredth to one million and is rounded to the nearest hundredth.
 * **daysinterval**: Determines the number of consecutive days from parameter datelist for retrieving exchange rate within those dates. In order for daysinterval to take effect, only one date should be specified in datelist.
@@ -46,9 +53,9 @@ Users can query the exchange rate according to their needs and:
 **[1]** Today's date is based on your computer's time zone. Fixer may not have available data for today's date if your timezone is more ahead than others. In those instances, it is recommended to specify a date explicitly by using the parameter datelist.
 
 ### Flag Parameters
-* **debug**: Prints helpful information for debugging.
+* **debug**: Prints activity for debugging, such as URL used for calling API and query used for fetching data from the database.
 * **visual**: Makes output human readable instead of csv format.
-* **legacy_user**: For a limited time, [Fixer currently offers additional features for free to legacy users](https://fixer.io/signup/legacy), such as the ability to use any currency as your base and SSL support. Please turn this flag on if you are a legacy user. If this flag is turned off, our script will do some workarounds to still be able to use any currency as your base.
+* **legacy_user**: For a limited time, [Fixer currently offers additional features for free to legacy users](https://fixer.io/signup/legacy), such as the ability to use any currency as your base and SSL support. Please turn this flag on if you are a legacy/basic user. If this flag is turned off, our script will do some workarounds to still be able to use any currency as your base.
 * **no_header**: Output does not display header which can be useful when appending data to existing files.
 * **sort_by_symbol**: By default, the output is sorted by date in ascending order and then by currency symbol in ascending order. This flag overrides the default sorting with currency symbol in ascending order and then by date in ascending order.
 * **output_fluctuation**: Sorts output in the same format as flag parameter sort_by_symbol and displays fluctuation data by adding the following two columns within the output: perc_diff and difference.
@@ -74,7 +81,7 @@ Users can query the exchange rate according to their needs and:
 
 #### How do I filter output to only the currencies I need?
 
-> You can either use optional parameter **currencynamelist** for entering a list that is similar to the currency name list within our [currency configurations](currency_configurations.py) or use the optional parameter **symbollist** for entering a list of symbols that match with the symbols list found in our [currency configurations](currency_configurations.py) (case insensitive).  
+> You can either use optional parameter **currencynamelist** for entering a list that is similar to the currency name list within our [currency configurations](configurations/currency_configurations.py) or use the optional parameter **symbollist** for entering a list of symbols that match with the symbols list found in our [currency configurations](configurations/currency_configurations.py) (case insensitive).  
 
 #### How do I sort the output?
 
@@ -94,7 +101,7 @@ Users can query the exchange rate according to their needs and:
 
 #### I am getting the following error: API request volume has been reached. How is that possible?
 
-> [Each plan](https://fixer.io/product) has a quota of how many API calls you can do per month. At the moment of this writing, free accounts are allowed to make up to a thousand API calls per month. Some of the reasons where your API limit has reached could be due to calling our script too often or requesting a long date range within our script. Did you know that requesting rates between 2018-03-01 to 2018-03-10 costs ten API calls even when you run this script only once? One way to save the number of API calls you do per month is by [storing the data you frequently use in a flat file](README.md#do-you-have-the-option-for-saving-my-csv-output-into-a-flatfile) which can be later used as a source by storing it into a data lake/database/spreadsheet.
+> [Each plan](https://fixer.io/product) has a quota of how many API calls you can do per month. At the moment of this writing, free accounts are allowed to make up to a thousand API calls per month. Some of the reasons where your API limit has reached could be due to calling our script too often or requesting a long date range within our script. Did you know that requesting rates between 2018-03-01 to 2018-03-10 costs ten API calls even when you run this script only once? **We do our best on archiving every API call you do into an SQLite database so you do not get charged again.** We recommend you to turn off flag parameter **legacy_user** at the cost of accuracy so all your data is cached by default only once per date by EUR as the base currency. Otherwise, there will be one API call for every base currency requested for that date.
 
 #### I am a free user in Fixer. I do not have access to the Conversion Endpoint. Can I use your script to do that?
 
@@ -106,7 +113,7 @@ Users can query the exchange rate according to their needs and:
 
 #### Your currency configurations are out of date? Do I have to update your currency configurations manually?
 
-> You can update your [currency configurations](currency_configurations.py) automatically by running the python script **update_currency_configurations** by typing `python3 update_currency_configurations.py "<access-key-id>"`. Each time you update will cost you one API call.
+> You can update your [currency configurations](configurations/currency_configurations.py) automatically by running the python script **update_currency_configurations** by typing `python3 update_currency_configurations.py "<access-key-id>"`. Each time you update will cost you one API call.
 
 #### Do you have the option for saving my CSV output into a flatfile?
 
@@ -118,7 +125,7 @@ Users can query the exchange rate according to their needs and:
 
 #### Great! How do I store my flat file into a database?
 
-> For starters, try [SQLite in Python](http://sebastianraschka.com/Articles/2014_sqlite_in_python_tutorial.html). Assuming you have a flatfile called `feb2018.csv`, you can do the following:
+> By default, every time you do an API call, it gets archived into an SQLite database in the data folder with filename **currency_eur.sqlite** (**currency_<base_currency>.sqlite** if flag parameter **legacy_user** is enabled). All the data in the database is stored in the table `currency` with columns `symbol`, `date`, `rate`. On the long run, this will give you the ability to do more calls via our script without being charged any API calls from your subscription.<br><br>If you are looking for something more specific to store in your database from a flat file, try [SQLite in Python](http://sebastianraschka.com/Articles/2014_sqlite_in_python_tutorial.html). Assuming you have a flat file called `feb2018.csv`, you can do the following:
 ```python
 import csv, sqlite3
 
@@ -172,12 +179,12 @@ Mexican Peso                            MXN         2018-03-04       12.50      
 ```
 
 ### Versions
-**Current Version:** [0.08](README.md#version-008)
+**Current Version:** [0.09](README.md#version-009)
 #### Version 0.01
 * Initial Draft
 #### Version 0.02
 * Changed default base currency from USD to EUR
-* Added script **update_currency_configurations** that allow you to update automatically [currency configurations](currency_configurations.py) with the use of Fixer Supported Symbols Endpoint.
+* Added script **update_currency_configurations** that allow you to update automatically [currency configurations](configurations/currency_configurations.py) with the use of Fixer Supported Symbols Endpoint.
 * Added documentation for all existing configurations.
 #### Version 0.03
 * The formatting of numerical figures is in decimal format. If output in API is found in scientific notation, it is converted to decimal format. To keep accuracy of calculations, we keep them in decimal format. After calculations, we round them up with a precision of 12 digits and show the output of all numerical figures with 12 digits.
@@ -190,13 +197,13 @@ Mexican Peso                            MXN         2018-03-04       12.50      
 #### Version 0.04
 * Numerical figures extended from 12 digits to 14 digits and increased decimal precision.
 * Added a new column and optional parameter **amount** which is used to multiply the `rate`. The optional parameter amount must be between the values of one hundredth and one million and is rounded to the nearest one hundredth.
-* Added optional parameter **symbollist** that allows filtering output by only the list of symbols in the symbolllist that match with the symbols within the [currency configurations](currency_configurations.py) (case insensitive).
+* Added optional parameter **symbollist** that allows filtering output by only the list of symbols in the symbolllist that match with the symbols within the [currency configurations](configurations/currency_configurations.py) (case insensitive).
 * Added optional parameter **daysinterval** that represents the number of consecutive days from the parameter datelist for the use of retrieving exchange rate within those dates. Parameter daysinterval must be a positive number and can have only one date in parameter datelist. 
 * Updated main documentation and Q&A section on existing and new features.
 #### Version 0.05
 * Script converted from **Python 2** to **Python 3**. Unfortunately, we are dropping support for Python 2. The latest supported working version of python_currensy_fixer for Python 2 is [Version 0.04](https://github.com/asokratis/python_currency_fixer/releases/tag/v0.04). 
 * All output is sorted by date in ascending order and then by currency symbol in ascending order.
-* To keep track of all new changes properly, [currency configurations](currency_configurations.py), as well script **update_currency_configurations** is now sorted by currency symbol in ascending order.
+* To keep track of all new changes properly, [currency configurations](configurations/currency_configurations.py), as well script **update_currency_configurations** is now sorted by currency symbol in ascending order.
 * Optional parameter **daysinterval** now supports negative numbers.
 * Updated main documentation on the new features and added required modules for python_currency_fixer in [requirements.txt](requirements.txt)
 #### Version 0.06
@@ -210,3 +217,10 @@ Mexican Peso                            MXN         2018-03-04       12.50      
 * Added new section within documentation: **Installation**.
 * Fixed encoding issues when running **update_currency_configurations**.
 * Updated main documentation and Q&A section on existing and new features.
+#### Version 0.09
+* Added the ability to **cache data into an SQLite database**. This allows user to not get charged the next time it calls API for the same date (or same date and base currency if having flag parameter legacy_user turned on). The database is stored in data folder with filename **currency_eur.sqlite** (or **currency_<base_currency>.sqlite** if flag parameter legacy_user is enabled). All the data in the database is stored in the table `currency` with columns `symbol`, `date`, `rate`. 
+* To remove clutter, moved the location of configurations (currency_configurations.py, retry_configurations.py) in the **configurations folder**.
+* Flag parameter **debug** will display running queries on database and URL API calls for data not available at database. 
+* Updated main documentation and Q&A section on existing and new features.
+
+All images are extracted/derived from [openclipart](https://openclipart.org/) <br>_The one stop public domain clipart images for unlimited commercial use._
