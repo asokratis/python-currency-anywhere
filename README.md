@@ -1,6 +1,14 @@
+### Announcement: python-currency-fixer is a stand-alone project for the future development of python-currency-anywhere
+
+![python_currency_fixer](images/future_logo.png)
+* Same as python-currency-fixer, but instead of only being compatible with [Fixer](https://fixer.io/product), will be compatible with other currency API services as well, such as [currencylayer](https://currencylayer.com/product), [openexchangerates](https://openexchangerates.org/signup), and [European Central Bank Feed](http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml), as well cryptocurrency API services, such as [coinapi](https://www.coinapi.io/pricing) and [cryptocompare](https://min-api.cryptocompare.com/).
+* Ability to simulate all important features each exchange rate service provides by retrieving only the  `currency symbol`, `date`, and `rate` through their API.
+* The ability to use multiple sources for a single output (i.e. Give me output X that uses service Y to get currency A, B, C, and service Z to get currency D, E, F)
+
+# python-currency-fixer
 ![python_currency_fixer](images/logo.png)
-# python_currency_fixer
-Get your currency with this python script via [Fixer](https://fixer.io)<br><br>![python_currency_fixer_demo](images/python_currency_fixer_demo.gif)
+Get your currency with this python script via [Fixer](https://fixer.io)<br><br>
+![python_currency_fixer_demo](images/python_currency_fixer_demo.gif)
 
 **Requirements:** 
 * **Python 3 environment with additional modules specified in [requirements.txt](requirements.txt)**
@@ -145,6 +153,10 @@ all_rows = cur.fetchall()
 print(all_rows)
 con.close()
 ```
+
+#### When are you going to create python-currency-anywhere?
+
+>  **Anytime**
 
 ### Examples
 
