@@ -29,7 +29,7 @@ python3 get_currency.py <apiaccesskey>
 **[1]** _If you have encoding errors when running the script, you may additionally need to run `export PYTHONIOENCODING=utf_8`_
 
 ## configurations
-To update existing [currency_configurations](configurations/currency_configurations.py), run [update_currency_configurations](update_currency_configurations.py) while providing your Fixer API Key as parameter. You can update the maximum number of failed attempts on requesting currency data at [retry_configurations](configurations/retry_configurations.py). 
+Due to legal constraints, [currency_configurations](configurations/currency_configurations.py) does not reflect all of Fixer currencies provided because they are retrieved by [scraping the currencies from Wikipedia](https://en.wikipedia.org/wiki/List_of_circulating_currencies). To update existing [currency_configurations](configurations/currency_configurations.py), run [update_currency_configurations](update_currency_configurations.py) while providing your Fixer API Key as the parameter.<br><br>You can also update the maximum number of failed attempts by requesting currency data at [retry_configurations](configurations/retry_configurations.py). 
 
 ## get_currency
 By default, uses [Fixer](https://fixer.io) free and legacy/basic accounts to display exchange rate for all currencies with EUR as the base currency in the amounts of one unit for today's date. Results are sorted by date in ascending order and then by currency symbol in ascending order. Results are also cached by date (and base currency if using legacy/basic accounts) so next time they are requested, you are not charged an API call.
@@ -222,5 +222,11 @@ Mexican Peso                            MXN         2018-03-04       12.50      
 * To remove clutter, moved the location of configurations (currency_configurations.py, retry_configurations.py) in the **configurations folder**.
 * Flag parameter **debug** will display running queries on database and URL API calls for data not available at database. 
 * Updated main documentation and Q&A section on existing and new features.
+#### Version 0.10
+* Legal stuff: Added script **wikipedia_currency_configurations.py[1]** for downloading the currencies from Wikipedia and to load them into [currency configurations](configurations/currency_configurations.py). Fixer (and most likely any other subscription API) does not allow you to **share** the API data that you retrieve from them with your API key. **It is only for your personal use**. 
+* The default [currency configurations](configurations/currency_configurations.py) provided is replaced by the data provided by Wikipedia instead of Fixer. Please follow all steps in [Installation](README.md#installation) so [currency configurations](configurations/currency_configurations.py) reflect all currencies in Fixer ([requires registration of a Fixer API key](https://fixer.io/product))
+* Updated main documentation and Q&A section on existing and new features.
+
+**[1]** Uses BeautifulSoup4 (for scraping) and re (for regular expressions)<br>
 
 All images are extracted/derived from [openclipart](https://openclipart.org/) <br>_The one stop public domain clipart images for unlimited commercial use._
