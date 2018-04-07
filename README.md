@@ -191,7 +191,7 @@ Mexican Peso                            MXN         2018-03-04       12.50      
 ```
 
 ### Versions
-**Current Version:** [0.09](README.md#version-009)
+**Current Version:** [0.10](README.md#version-010)
 #### Version 0.01
 * Initial Draft
 #### Version 0.02
