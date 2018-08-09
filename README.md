@@ -5,7 +5,7 @@ A microservice to get currency in different formats from any service provider<br
 
 **Requirements:** 
 * **Python 3 environment with additional modules specified in [requirements.txt](requirements.txt)**
-* **An API Key from one to many currency service providers (i.e. For starters, register a subscription plan at [fixer](https://fixer.io/product), [openexchangerates](https://openexchangerates.org/signup), [currencylayer](https://currencylayer.com/product))**
+* **An API Key from one to many currency service providers (i.e. For starters, register a subscription plan at [fixer](https://fixer.io/product), [openexchangerates](https://openexchangerates.org/signup), [currencylayer](https://currencylayer.com/product))**<br>
  ![python-logo-master](images/python_logo.png)
 
 ## Why use python-currency-anywhere?
@@ -16,7 +16,7 @@ A microservice to get currency in different formats from any service provider<br
 * **Outputs**: Get your output in a human-readable way through your terminal or save your output to a new flat file.
 
 ## Installation
-* Create an account from a currency service provider that is compatible ([fixer](https://fixer.io/product), [openexchangerates](https://openexchangerates.org/signup), [currencylayer](https://currencylayer.com/product)).<br>
+* Create an account from a currency service provider that is compatible ([fixer](https://fixer.io/product), [openexchangerates](https://openexchangerates.org/signup), [currencylayer](https://currencylayer.com/product)).
 * Once logged in at currency service provider, get your API key from your dashboard.
 * Paste the key on [settings](settings.ini) within `value_apikey` without enclosing it with quotes matching the service provider registered and run the script by doing the following: **[1]**   
 ```shell
