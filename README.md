@@ -9,7 +9,7 @@ A microservice to get currency in different formats from any service provider<br
  ![python-logo-master](images/python_logo.png)
 
 ## Why use python-currency-anywhere?
- ![whyuse](images/why_use.png)
+ ![whyusemicroservice](images/why_use_microservice.png)
 * **User-Friendly**: With thorough documentation and debugging provided, you will never be lost.
 * **Cached**: Relying all your requests on a currency service provider will make you reach your monthly API limits in no time. With our script storing all your requests on your local database, you will never have to worry about limits anymore.
 * **Features**: With just a free currency service provider account, we are able to simulate within our script all premium features paid currency services provides.
