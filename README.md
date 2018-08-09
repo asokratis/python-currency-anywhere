@@ -1,5 +1,5 @@
 # python-currency-anywhere
-![python_currency_anywhere](images/future_logo.png)
+![python_currency_anywhere](images/logo.png)
 A microservice to get currency in different formats from any service provider<br><br>
 ![python_currency_anywhere_demo](images/python_currency_anywhere_demo.gif)
 
@@ -16,9 +16,9 @@ A microservice to get currency in different formats from any service provider<br
 * **Outputs**: Get your output in a human-readable way through your terminal or save your output to a new flat file.
 
 ## Installation
-* Create an account from a currency service provider that is compatible ([fixer](https://fixer.io/product), [openexchangerates](https://openexchangerates.org/signup), [currencylayer](https://currencylayer.com/product)).
+* Create an account from a currency service provider that is compatible ([fixer](https://fixer.io/product), [openexchangerates](https://openexchangerates.org/signup), [currencylayer](https://currencylayer.com/product)).<br>
 * Once logged in at currency service provider, get your API key from your dashboard.
-* Paste the key on [settings](settings.ini) within `servicenameprovider` matching the service provider registered and run the script by doing the following: **[1]**   
+* Paste the key on [settings](settings.ini) within `value_apikey` without enclosing it with quotes matching the service provider registered and run the script by doing the following: **[1]**   
 ```shell
 git clone https://github.com/asokratis/python-currency-anywhere
 cd python-currency-anywhere
@@ -41,7 +41,7 @@ Users can query the exchange rate according to their needs and:
 * [Store the results in a flat file for later use](README.md#do-you-have-the-option-for-saving-my-csv-output-into-a-flatfile)
 
 ### Required Parameters
-* **serviceprovider**: The name of the currency service provider mentioned. See [settings](settings.ini) to check currently compatible service providers.
+* **serviceprovider**: The name of the currency service provider. See [settings](settings.ini) to check currently compatible service providers.
 
 ### Optional Parameters
 * **datelist**: Date list where each date is in YYYY-MM-DD format. Used for retrieving exchange rate within the time points specified in date list. If not specified, uses today's date **[1]**.
@@ -61,7 +61,7 @@ Users can query the exchange rate according to their needs and:
 * **sort_by_symbol**: By default, the output is sorted by date in ascending order and then by currency symbol in ascending order. This flag overrides the default sorting with currency symbol in ascending order and then by date in ascending order.
 * **output_fluctuation**: Sorts output in the same format as flag parameter sort_by_symbol and displays fluctuation data by adding the following two columns within the output: perc_diff and difference.
 
-**[1]** If its still available, [fixer offers additional features for free to legacy users](https://fixer.io/signup/legacy), such as the ability to use any currency as your base and SSL support. 
+**[1]** If its still available, [fixer offers paid membership features for free to legacy users](https://fixer.io/signup/legacy), such as the ability to use any currency as your base and SSL support. 
 
 ### Output 
 **1. currency_name** (Currency Name)<br>
@@ -128,7 +128,7 @@ Users can query the exchange rate according to their needs and:
 
 #### Great! How do I store my flat file into a database?
 
-> By default, every time you do an API call, it gets archived into an SQLite database in the data folder with filename **currency_<servicenameprovider>_eur.sqlite** (**currency_<servicenameprovider>_<base_currency>.sqlite** if flag parameter **paid_membership** is enabled). All the data in the database is stored in the table `currency` with columns `symbol`, `date`, `rate`. On the long run, this will give you the ability to do more calls via our script without being charged any API calls from your subscription.<br><br>If you are looking for something more specific to store in your database from a flat file, try [SQLite in Python](http://sebastianraschka.com/Articles/2014_sqlite_in_python_tutorial.html). Assuming you have a flat file called `feb2018.csv`, you can do the following:
+> By default, every time you do an API call, it gets archived into an SQLite database in the data folder with filename **currency_servicenameprovider_eur.sqlite** (**currency_servicenameprovider_<base_currency>.sqlite** if flag parameter **paid_membership** is enabled). All the data in the database is stored in the table `currency` with columns `symbol`, `date`, `rate`. On the long run, this will give you the ability to do more calls via our script without being charged any API calls from your subscription.<br><br>If you are looking for something more specific to store in your database from a flat file, try [SQLite in Python](http://sebastianraschka.com/Articles/2014_sqlite_in_python_tutorial.html). Assuming you have a flat file called `feb2018.csv`, you can do the following:
 ```python
 import csv, sqlite3
 
