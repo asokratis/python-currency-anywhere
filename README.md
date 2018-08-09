@@ -186,7 +186,6 @@ Mexican Peso                            MXN         2018-03-04       12.50      
 If you want to give out a hand, create an issue or pull request and categorize it with the following labels:
 * **Maintainance:** Reporting bugs. Fixing bugs. Refactoring code. Unit testing.
 * **Flexibility:** Adding more currency service providers, such as [European Central Bank Feed](http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml), as well cryptocurrency API services, such as [coinapi](https://www.coinapi.io/pricing) and [cryptocompare](https://min-api.cryptocompare.com/).
-* **Convenience:** The ability to use multiple sources for a single output (i.e. Give me output X that uses service provider Y to get currency A, B, C, and service provider Z to get currency D, E, F)
 
 ### Versions
 **Current Version:** [0.11](README.md#version-011)
