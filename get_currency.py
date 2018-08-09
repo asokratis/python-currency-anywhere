@@ -9,6 +9,10 @@ import simplejson as json
 from functools import wraps
 import decimal
 import csv, sqlite3
+import configparser
+
+config = configparser.RawConfigParser()
+config.read('settings.ini')
 
 # Trying out a Retry decorator in Python = https://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/
 def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
@@ -45,10 +49,10 @@ def validate(date_text):
 @retry(URLError, tries=retry_configurations.config["tries"], delay=retry_configurations.config["delay"], backoff=retry_configurations.config["backoff"])
 def get_currency(reference_date):
     currency_base=args.basecurrency
+    basecurrencyusedonsite= args.basecurrency if args.paid_membership else default_currencybase
     country_map = currency_configurations.currencymap
     search=args.currencynamelist
     usersymbol=args.symbollist
-    access_key=args.apiaccesskey
     symbols=""
     url=""
     query=""
@@ -56,20 +60,21 @@ def get_currency(reference_date):
     inputsymbols = [item.lower() for item in usersymbol]
     cur.execute("SELECT COUNT(*) FROM currency WHERE date = '%s'" % reference_date + ";")
     if (cur.fetchall()[0])[0] == 0:
-        if args.legacy_user:
-            url = "https://data.fixer.io/api/" + reference_date + "?access_key=" + access_key + "&base=" + currency_base
-        else:
-            url = "http://data.fixer.io/api/" + reference_date + "?access_key=" + access_key + "&base=EUR" 
+        url =  domain_name + prefix_get_date.replace("YYYY-MM-DD",reference_date) + variable_apikey + "=" + value_apikey + "&" + variable_basekey + "=" + basecurrencyusedonsite
         if args.debug:
-            print("Debug: Calling API to cache data from " + url)
+            print("Debug: Calling API to cache data from " + url.replace(value_apikey,"<YOUR_API_KEY>"))
         html = urlopen(url)
         handler = html.read()
         result = json.loads(handler)
-        if result["success"] == False:
-            print("ERROR " + str(result['error']['code']))
-            print(result['error']['info'])
+        if (error_type == "1" and not result["success"] == True) or (error_type == "2" and 'error' in result):
+            if error_type == "1":
+                print("ERROR " + str(result['error']['code']))
+                print(result['error']['info'])
+            elif error_type == "2":
+                print("ERROR"  + str(result['status']))
+                print(str(result['description']))
         else:
-            to_db = [(key,reference_date,value) for key,value in result['rates'].items()]
+            to_db = [(key.replace(basecurrencyusedonsite,"",1) if remove_exchange_prefix == "1" else key,reference_date,value) for key,value in result[output_tree].items()]
             cur.executemany("INSERT INTO currency (symbol, date, rate) VALUES (?, ?, ?);", to_db)
             con.commit() 
     for key, value in currency_configurations.currencymap.items():
@@ -80,7 +85,7 @@ def get_currency(reference_date):
     elif not (any(currency_base==key for key in currency_configurations.currencymap.keys())):
         print("Currency base was not found. Please try again and check currency configuration for the list of currency.")
     else:
-        if args.legacy_user:
+        if args.paid_membership:
             query = "select symbol, rate from currency where date = '%s'" % reference_date + " and upper(symbol) IN (%s) " % ','.join("'" + symbol + "'" for symbol in symbols[:-1].split(","))
         else:
             query = "select symbol, rate from currency where date = '%s'" % reference_date + " and upper(symbol) IN (%s "  % ','.join("'" + symbol + "'" for symbol in symbols[:-1].split(",")) + ",'%s')" % currency_base
@@ -90,7 +95,7 @@ def get_currency(reference_date):
         finalresult = dict(cur.fetchall())
         outputlist=[]
         denominator = 1
-        if not args.legacy_user:
+        if not args.paid_membership:
             denominator=decimal.Decimal(finalresult[currency_base])
         for symbol,rate in sorted(finalresult.items()):
             if symbol in symbols:
@@ -109,7 +114,7 @@ now=datetime.datetime.now()
 currentdate=now.strftime("%Y-%m-%d")
 CLI=argparse.ArgumentParser()
 CLI.add_argument(
-  "apiaccesskey",
+  "serviceprovider",
   type=str
 )
 CLI.add_argument(
@@ -154,7 +159,7 @@ CLI.add_argument(
    action='store_true'
 )
 CLI.add_argument(
-   "--legacy_user",
+   "--paid_membership",
    action='store_true'
 )
 CLI.add_argument(
@@ -170,6 +175,20 @@ CLI.add_argument(
    action='store_true'
 )
 args = CLI.parse_args()
+
+exchange_tree=config.get(args.serviceprovider,'exchange_tree')
+variable_apikey=config.get(args.serviceprovider,'variable_apikey')
+domain_name=config.get(args.serviceprovider,'domain_name')
+value_apikey=config.get(args.serviceprovider,'value_apikey')
+error_type=config.get(args.serviceprovider,'error_type')
+get_currencylist=config.get(args.serviceprovider,'get_currencylist')
+exchange_tree=config.get(args.serviceprovider,'exchange_tree')
+variable_basekey=config.get(args.serviceprovider,'variable_basekey')
+prefix_get_date=config.get(args.serviceprovider,'prefix_get_date')
+remove_exchange_prefix=config.get(args.serviceprovider,'remove_exchange_prefix')
+default_currencybase=config.get(args.serviceprovider,'default_currencybase')
+output_tree=config.get(args.serviceprovider,'output_tree')
+
 header=""
 header1=""
 header2=""
@@ -202,10 +221,11 @@ else:
     resultlist=[]
     fullresultlist=[]
     sqlite_file='data/currency_'
-    if args.legacy_user:
+    sqlite_file += args.serviceprovider  + "_"
+    if args.paid_membership:
         sqlite_file += args.basecurrency.lower() + '.sqlite'
     else:
-        sqlite_file += "eur.sqlite" 
+        sqlite_file += default_currencybase + ".sqlite" 
     con = sqlite3.connect(sqlite_file)
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS currency (symbol, date, rate);")

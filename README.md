@@ -1,46 +1,39 @@
-### Announcement: python-currency-fixer is a stand-alone project for the future development of python-currency-anywhere
-
-![python_currency_fixer](images/future_logo.png)
-* Same as python-currency-fixer, but instead of only being compatible with [Fixer](https://fixer.io/product), will be compatible with other currency API services as well, such as [currencylayer](https://currencylayer.com/product), [openexchangerates](https://openexchangerates.org/signup), and [European Central Bank Feed](http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml), as well cryptocurrency API services, such as [coinapi](https://www.coinapi.io/pricing) and [cryptocompare](https://min-api.cryptocompare.com/).
-* Ability to simulate all important features each exchange rate service provides by retrieving only the  `currency symbol`, `date`, and `rate` through their API.
-* The ability to use multiple sources for a single output (i.e. Give me output X that uses service Y to get currency A, B, C, and service Z to get currency D, E, F)
-
-# python-currency-fixer
-![python_currency_fixer](images/logo.png)
-Get your currency with this python script via [Fixer](https://fixer.io)<br><br>
-![python_currency_fixer_demo](images/python_currency_fixer_demo.gif)
+# python-currency-anywhere
+![python_currency_anywhere](images/future_logo.png)
+A microservice to get currency in different formats from any service provider<br><br>
+![python_currency_anywhere_demo](images/python_currency_anywhere_demo.gif)
 
 **Requirements:** 
 * **Python 3 environment with additional modules specified in [requirements.txt](requirements.txt)**
-* **Fixer API Key (accessible after [registering a subscription plan at Fixer](https://fixer.io/product))**
+* **An API Key from one to many currency service providers (i.e. For starters, register a subscription plan at [fixer](https://fixer.io/product), [openexchangerates](https://openexchangerates.org/signup), [currencylayer](https://currencylayer.com/product))**
  ![python-logo-master](images/python_logo.png)
 
-## Why use python-currency-fixer?
+## Why use python-currency-anywhere?
  ![whyuse](images/why_use.png)
 * **User-Friendly**: With thorough documentation and debugging provided, you will never be lost.
-* **Cached**: Relying all your requests on Fixer API will make you reach your monthly API limits in no time. With our script storing all your requests on your local database, you will never have to worry about limits anymore.
-* **Features**: With just a free Fixer account, we are able to simulate within our script all premium features Fixer provides.
+* **Cached**: Relying all your requests on a currency service provider will make you reach your monthly API limits in no time. With our script storing all your requests on your local database, you will never have to worry about limits anymore.
+* **Features**: With just a free currency service provider account, we are able to simulate within our script all premium features paid currency services provides.
 * **Outputs**: Get your output in a human-readable way through your terminal or save your output to a new flat file.
 
 ## Installation
-* [Create your Fixer account](https://fixer.io/product)
-* Once logged in at Fixer, get your API key from your dashboard.
-* Set up your environment and run the script by doing the following: **[1]**   
+* Create an account from a currency service provider that is compatible ([fixer](https://fixer.io/product), [openexchangerates](https://openexchangerates.org/signup), [currencylayer](https://currencylayer.com/product)).
+* Once logged in at currency service provider, get your API key from your dashboard.
+* Paste the key on [settings](settings.ini) within `servicenameprovider` matching the service provider registered and run the script by doing the following: **[1]**   
 ```shell
-git clone https://github.com/asokratis/python-currency-fixer
-cd python-currency-fixer
+git clone https://github.com/asokratis/python-currency-anywhere
+cd python-currency-anywhere
 sudo pip3 install -r requirements.txt 
-python3 update_currency_configurations.py <apiaccesskey>
-python3 get_currency.py <apiaccesskey>
+python3 update_currency_configurations.py <servicenameprovider>
+python3 get_currency.py <servicenameprovider>
 ```
-**[1]** _Replace `<apiaccesskey>` with the API key you retrieved previously._<br>
+**[1]** _Replace `<servicenameprovider>` with the service provider registered._<br>
 **[1]** _If you have encoding errors when running the script, you may additionally need to run `export PYTHONIOENCODING=utf_8`_
 
 ## configurations
-Due to legal constraints, [currency_configurations](configurations/currency_configurations.py) does not reflect all of Fixer currencies provided because they are retrieved by [scraping the currencies from Wikipedia](https://en.wikipedia.org/wiki/List_of_circulating_currencies). To update existing [currency_configurations](configurations/currency_configurations.py), run [update_currency_configurations](update_currency_configurations.py) while providing your Fixer API Key as the parameter.<br><br>You can also update the maximum number of failed attempts by requesting currency data at [retry_configurations](configurations/retry_configurations.py). 
+Due to legal constraints, [currency_configurations](configurations/currency_configurations.py) does not reflect all of currencies  because they are retrieved by [scraping the currencies from Wikipedia](https://en.wikipedia.org/wiki/List_of_circulating_currencies). To update existing [currency_configurations](configurations/currency_configurations.py), run [update_currency_configurations](update_currency_configurations.py) while providing the name of your service provider as the parameter.<br><br>You can also update the maximum number of failed attempts by requesting currency data at [retry_configurations](configurations/retry_configurations.py). 
 
 ## get_currency
-By default, uses [Fixer](https://fixer.io) free and legacy/basic accounts to display exchange rate for all currencies with EUR as the base currency in the amounts of one unit for today's date. Results are sorted by date in ascending order and then by currency symbol in ascending order. Results are also cached by date (and base currency if using legacy/basic accounts) so next time they are requested, you are not charged an API call.
+By default, uses the free and basic accounts of the compatible currency service providers to display exchange rate for all currencies with EUR as the base currency in the amounts of one unit for today's date. Results are sorted by date in ascending order and then by currency symbol in ascending order. Results are also cached by date (and base currency if using legacy/basic accounts) so next time they are requested, you are not charged an API call.
 
 ### General Purpose
 Users can query the exchange rate according to their needs and: 
@@ -48,7 +41,7 @@ Users can query the exchange rate according to their needs and:
 * [Store the results in a flat file for later use](README.md#do-you-have-the-option-for-saving-my-csv-output-into-a-flatfile)
 
 ### Required Parameters
-* **apiaccesskey**: Register for an API Key at [Fixer](https://fixer.io)
+* **serviceprovider**: The name of the currency service provider mentioned. See [settings](settings.ini) to check currently compatible service providers.
 
 ### Optional Parameters
 * **datelist**: Date list where each date is in YYYY-MM-DD format. Used for retrieving exchange rate within the time points specified in date list. If not specified, uses today's date **[1]**.
@@ -58,15 +51,17 @@ Users can query the exchange rate according to their needs and:
 * **amount**: The amount to be converted from the base currency. Amount can be between the values of one hundredth to one million and is rounded to the nearest hundredth.
 * **daysinterval**: Determines the number of consecutive days from parameter datelist for retrieving exchange rate within those dates. In order for daysinterval to take effect, only one date should be specified in datelist.
 
-**[1]** Today's date is based on your computer's time zone. Fixer may not have available data for today's date if your timezone is more ahead than others. In those instances, it is recommended to specify a date explicitly by using the parameter datelist.
+**[1]** Today's date is based on your computer's time zone. Your service provider may not have available data for today's date if your timezone is more ahead than others. In those instances, it is recommended to specify a date explicitly by using the parameter datelist.
 
 ### Flag Parameters
 * **debug**: Prints activity for debugging, such as URL used for calling API and query used for fetching data from the database.
 * **visual**: Makes output human readable instead of csv format.
-* **legacy_user**: For a limited time, [Fixer currently offers additional features for free to legacy users](https://fixer.io/signup/legacy), such as the ability to use any currency as your base and SSL support. Please turn this flag on if you are a legacy/basic user. If this flag is turned off, our script will do some workarounds to still be able to use any currency as your base.
+* **paid_membership**: You can turn this flag on if you are a paying subscriber to a currency service provider **[1]**. If this flag is turned off, our script will do some workarounds to still be able to use any currency as your base. 
 * **no_header**: Output does not display header which can be useful when appending data to existing files.
 * **sort_by_symbol**: By default, the output is sorted by date in ascending order and then by currency symbol in ascending order. This flag overrides the default sorting with currency symbol in ascending order and then by date in ascending order.
 * **output_fluctuation**: Sorts output in the same format as flag parameter sort_by_symbol and displays fluctuation data by adding the following two columns within the output: perc_diff and difference.
+
+**[1]** If its still available, [fixer offers additional features for free to legacy users](https://fixer.io/signup/legacy), such as the ability to use any currency as your base and SSL support. 
 
 ### Output 
 **1. currency_name** (Currency Name)<br>
@@ -95,11 +90,11 @@ Users can query the exchange rate according to their needs and:
 
 > By default, the output is sorted by date in ascending order and then by currency symbol in ascending order. Use the flag parameter **sort_by_symbol** to sort instead by currency symbol in ascending order and then by date in ascending order.
 
-#### I am a free user in Fixer. Can I use any base currencies with this script?
+#### I am a free user in my currency service provider. Can I use any base currencies with this script?
 
-> Yes. Currently, Fixer only allows EUR as their base currency for free users. Our script does some workarounds to closely resemble of fetching results with a different base currency. If you used the old Fixer without API key, for a limited time, you can use any base currency by registering a [legacy account](https://fixer.io/signup/legacy). Just do not forget to add the flag parameter **legacy_user** when using our script.
+> Yes. Currently, most currency service providers provide only EUR or USD as their base currency for free users. Our script does some workarounds to closely resemble of fetching results with a different base currency. If you used the old Fixer without API key, for a limited time, you can use any base currency by registering a [legacy account](https://fixer.io/signup/legacy). Just do not forget to add the flag parameter **paid_membership** when using our script.
 
-#### I am a free user in Fixer. I do not have access to the Time-Series Endpoint. Can I use your script to do that?
+#### I am a free user in my currency service provider. I do not have access to the Time-Series Endpoint. Can I use your script to do that?
 
 > Yes. However, unlike running a Time-Series Endpoint will cost you one API call, our script will cost you one API call for each date you input in our optional parameter **datelist**. For instance, if you want to find the rates between 2018-03-01 and 2018-03-10, you will need to type `--datelist 2018-03-01 2018-03-02 2018-03-03 2018-03-04 2018-03-05 2018-03-06 2018-03-07 2018-03-08 2018-03-09 2018-03-10` which will cost you ten API calls. 
 
@@ -109,23 +104,23 @@ Users can query the exchange rate according to their needs and:
 
 #### I am getting the following error: API request volume has been reached. How is that possible?
 
-> [Each plan](https://fixer.io/product) has a quota of how many API calls you can do per month. At the moment of this writing, free accounts are allowed to make up to a thousand API calls per month. Some of the reasons where your API limit has reached could be due to calling our script too often or requesting a long date range within our script. Did you know that requesting rates between 2018-03-01 to 2018-03-10 costs ten API calls even when you run this script only once? **We do our best on archiving every API call you do into an SQLite database so you do not get charged again.** We recommend you to turn off flag parameter **legacy_user** at the cost of accuracy so all your data is cached by default only once per date by EUR as the base currency. Otherwise, there will be one API call for every base currency requested for that date.
+> Each plan has a quota of how many API calls you can do per month. At the moment of this writing, most free accounts are allowed to make up to a thousand API calls per month. Some of the reasons where your API limit has reached could be due to calling our script too often or requesting a long date range within our script. Did you know that requesting rates between 2018-03-01 to 2018-03-10 costs ten API calls even when you run this script only once? **We do our best on archiving every API call you do into an SQLite database so you do not get charged again.** We recommend you though to turn off flag parameter **paid_membership** at the cost of accuracy so all your data is cached by default only once per date by the default base currency of the service provider. Otherwise, there will be one API call for every base currency requested for that date.
 
-#### I am a free user in Fixer. I do not have access to the Conversion Endpoint. Can I use your script to do that?
+#### I am a free user in my currency service provider. I do not have access to the Conversion Endpoint. Can I use your script to do that?
 
 > Yes. You can get your desired conversion by using the optional parameter **amount** which will reflect on the rate and reciprocal rate columns. **amount** can take values between one hundredth to one million. 
 
-#### I am a free user in Fixer. I do not have access to the Fluctuation Data Endpoint. Can I use your script to do that?
+#### I am a free user in my currency service provider. I do not have access to the Fluctuation Data Endpoint. Can I use your script to do that?
 
 > Yes. You can get fluctuation data by using the optional flag parameter **output_fluctuation**. Other than the output will be sorted in the same format optional flag parameter **sort_by_symbol** does, you will get two new columns in your output: **perc_diff.** and **difference**. 
 
 #### Your currency configurations are out of date? Do I have to update your currency configurations manually?
 
-> You can update your [currency configurations](configurations/currency_configurations.py) automatically by running the python script **update_currency_configurations** by typing `python3 update_currency_configurations.py "<access-key-id>"`. Each time you update will cost you one API call.
+> You can update your [currency configurations](configurations/currency_configurations.py) automatically by running the python script **update_currency_configurations** by typing `python3 update_currency_configurations.py "<servicenameprovider>"`. For most currency service providers, each time you update will cost you one API call.
 
 #### Do you have the option for saving my CSV output into a flatfile?
 
-> If you are in a linux environment, you have the ability to write the CSV output into a new flatfile by typing `python3 get_currency.py "<access-key-id>" > myflatfile.csv` or append to an existing flatfile by typing `python3 get_currency.py "<access-key-id>" --no_header >> myflatfile.csv` 
+> If you are in a linux environment, you have the ability to write the CSV output into a new flatfile by typing `python3 get_currency.py "<servicenameprovider>" > myflatfile.csv` or append to an existing flatfile by typing `python3 get_currency.py "<servicenameprovider>" --no_header >> myflatfile.csv` 
 
 #### Do you have the option for getting only the columns I need?
 
@@ -133,7 +128,7 @@ Users can query the exchange rate according to their needs and:
 
 #### Great! How do I store my flat file into a database?
 
-> By default, every time you do an API call, it gets archived into an SQLite database in the data folder with filename **currency_eur.sqlite** (**currency_<base_currency>.sqlite** if flag parameter **legacy_user** is enabled). All the data in the database is stored in the table `currency` with columns `symbol`, `date`, `rate`. On the long run, this will give you the ability to do more calls via our script without being charged any API calls from your subscription.<br><br>If you are looking for something more specific to store in your database from a flat file, try [SQLite in Python](http://sebastianraschka.com/Articles/2014_sqlite_in_python_tutorial.html). Assuming you have a flat file called `feb2018.csv`, you can do the following:
+> By default, every time you do an API call, it gets archived into an SQLite database in the data folder with filename **currency_<servicenameprovider>_eur.sqlite** (**currency_<servicenameprovider>_<base_currency>.sqlite** if flag parameter **paid_membership** is enabled). All the data in the database is stored in the table `currency` with columns `symbol`, `date`, `rate`. On the long run, this will give you the ability to do more calls via our script without being charged any API calls from your subscription.<br><br>If you are looking for something more specific to store in your database from a flat file, try [SQLite in Python](http://sebastianraschka.com/Articles/2014_sqlite_in_python_tutorial.html). Assuming you have a flat file called `feb2018.csv`, you can do the following:
 ```python
 import csv, sqlite3
 
@@ -154,13 +149,9 @@ print(all_rows)
 con.close()
 ```
 
-#### When are you going to create python-currency-anywhere?
-
->  **Anytime**
-
 ### Examples
 
-`python3 get_currency.py <access-key-id> --visual --datelist 2018-03-01 2017-03-01 --currencynamelist mex aus eur`
+`python3 get_currency.py <servicenameprovider> --visual --datelist 2018-03-01 2017-03-01 --currencynamelist mex aus eur`
 ```
 Currency Name                           Symbol            Date      Amount                            Rate                 Reciprocal Rate
 ============================================================================================================================================
@@ -172,7 +163,7 @@ Euro                                    EUR         2018-03-01        1.00      
 Mexican Peso                            MXN         2018-03-01        1.00               23.12974600000000                0.04323437014829
 ```
 
-`python3 get_currency.py <access-key-id> --visual --datelist 2018-03-01 --daysinterval 3 --symbollist MXN AUD EUR --basecurrency BTC --amount 12.5`
+`python3 get_currency.py <servicenameprovider> --visual --datelist 2018-03-01 --daysinterval 3 --symbollist MXN AUD EUR --basecurrency BTC --amount 12.5`
 ```
 Currency Name                           Symbol            Date      Amount                            Rate                 Reciprocal Rate
 ============================================================================================================================================
@@ -190,8 +181,15 @@ Euro                                    EUR         2018-03-04       12.50      
 Mexican Peso                            MXN         2018-03-04       12.50          2710908.17757009337928                0.00005763751104
 ```
 
+### Contribution
+
+If you want to give out a hand, create an issue or pull request and categorize it with the following labels:
+* **Maintainance:** Reporting bugs. Fixing bugs. Refactoring code. Unit testing.
+* **Flexibility:** Adding more currency service providers, such as [European Central Bank Feed](http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml), as well cryptocurrency API services, such as [coinapi](https://www.coinapi.io/pricing) and [cryptocompare](https://min-api.cryptocompare.com/).
+* **Convenience:** The ability to use multiple sources for a single output (i.e. Give me output X that uses service provider Y to get currency A, B, C, and service provider Z to get currency D, E, F)
+
 ### Versions
-**Current Version:** [0.10](README.md#version-010)
+**Current Version:** [0.11](README.md#version-011)
 #### Version 0.01
 * Initial Draft
 #### Version 0.02
@@ -238,7 +236,9 @@ Mexican Peso                            MXN         2018-03-04       12.50      
 * Legal stuff: Added script **wikipedia_currency_configurations.py[1]** for downloading the currencies from Wikipedia and to load them into [currency configurations](configurations/currency_configurations.py). Fixer (and most likely any other subscription API) does not allow you to **share** the API data that you retrieve from them with your API key. **It is only for your personal use**. 
 * The default [currency configurations](configurations/currency_configurations.py) provided is replaced by the data provided by Wikipedia instead of Fixer. Please follow all steps in [Installation](README.md#installation) so [currency configurations](configurations/currency_configurations.py) reflect all currencies in Fixer ([requires registration of a Fixer API key](https://fixer.io/product))
 * Updated main documentation and Q&A section on existing and new features.
+#### Version 0.11
+* python-currency-anywhere: Our microservice is now agnostic by the currency service provider that you want to use. Currently, made it compatible with currency service providers fixer, openexchangerates, and currencylayer.
 
-**[1]** Uses BeautifulSoup4 (for scraping) and re (for regular expressions)<br>
+**[1]** Uses BeautifulSoup4 (for scraping) and regex (for regular expressions)<br>
 
 All images are extracted/derived from [openclipart](https://openclipart.org/) <br>_The one stop public domain clipart images for unlimited commercial use._
