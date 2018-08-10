@@ -221,11 +221,11 @@ else:
     resultlist=[]
     fullresultlist=[]
     sqlite_file='data/currency_'
-    sqlite_file += args.serviceprovider  + "_"
+    sqlite_file += args.serviceprovider.lower()  + "_"
     if args.paid_membership:
         sqlite_file += args.basecurrency.lower() + '.sqlite'
     else:
-        sqlite_file += default_currencybase + ".sqlite" 
+        sqlite_file += default_currencybase.lower() + ".sqlite" 
     con = sqlite3.connect(sqlite_file)
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS currency (symbol, date, rate);")
