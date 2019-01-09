@@ -1,6 +1,6 @@
 # python-currency-anywhere
 ![python_currency_anywhere](images/logo.png)
-A microservice to get currency in different formats from any service provider.<br>[Check my demonstration to see how it works](https://www.youtube.com/watch?v=a7LWkQsib40&)<br><br> 
+A command line program where you can get currency in different formats from any service provider.<br>[Check my demonstration to see how it works](https://www.youtube.com/watch?v=a7LWkQsib40&)<br><br> 
 ![python_currency_anywhere_demo](images/python_currency_anywhere_demo.gif)
 
 **Requirements:** 
